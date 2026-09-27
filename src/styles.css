@@ -90,3 +90,19 @@ body {
 .adjacency ul { list-style: none; margin: 0 0 8px; padding: 0; }
 .adj-head { font-family: ui-monospace, Menlo, monospace; margin-right: 4px; }
 .queue-items { margin-top: 4px; }
+button { font: inherit; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg); cursor: pointer; }
+button:hover { border-color: var(--accent); }
+select, input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; }
+.player { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.player-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
+.player input[type='range'] { width: 100%; }
+.player-meta { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; color: var(--muted); }
+.question { border: 2px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px; margin-top: 8px; }
+.question-prompt { font-weight: 600; margin: 0 0 8px; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.question form { display: flex; gap: 6px; margin-bottom: 8px; }
+.feedback { padding: 8px 12px; border-radius: 6px; margin: 8px 0 0; }
+.feedback.good { background: color-mix(in srgb, var(--good) 15%, transparent); border: 1px solid var(--good); }
+.feedback.bad { background: color-mix(in srgb, var(--bad) 15%, transparent); border: 1px solid var(--bad); }
+.settings { display: flex; flex-direction: column; gap: 4px; }
+.settings .indent { padding-left: 20px; }
