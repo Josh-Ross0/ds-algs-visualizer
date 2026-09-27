@@ -51,3 +51,13 @@ test('select an edge and delete it', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Delete selected' }));
   expect(latest.edges).toEqual([]);
 });
+
+test('switching mode while dragging stops the drag', async () => {
+  const { container } = render(<Harness />);
+  const svg = container.querySelector('svg')! as any;
+  svg.getScreenCTM = () => null;
+  fireEvent.pointerDown(vertex(container, 'a'));
+  await userEvent.click(screen.getByRole('button', { name: 'Add vertex' }));
+  fireEvent.pointerMove(svg, { clientX: 250, clientY: 250 });
+  expect(latest.vertices.find((v) => v.id === 'a')).toEqual({ id: 'a', x: 100, y: 100 });
+});

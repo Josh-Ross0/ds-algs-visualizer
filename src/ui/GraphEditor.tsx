@@ -19,6 +19,7 @@ export function GraphEditor({ graph, onChange }: Props) {
     setMode(m);
     setSelected(null);
     setEdgeFrom(null);
+    setDragging(null);
     setMessage(null);
   };
 
