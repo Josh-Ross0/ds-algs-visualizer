@@ -106,3 +106,7 @@ select, input { font: inherit; color: var(--fg); background: var(--bg); border: 
 .feedback.bad { background: color-mix(in srgb, var(--bad) 15%, transparent); border: 1px solid var(--bad); }
 .settings { display: flex; flex-direction: column; gap: 4px; }
 .settings .indent { padding-left: 20px; }
+.editor { outline: none; }
+.editor-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.editor-toolbar button[aria-pressed='true'] { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+.hint { margin: 4px 0; font-size: 13px; }

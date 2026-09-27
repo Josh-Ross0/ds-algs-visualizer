@@ -1,0 +1,53 @@
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
+import type { Graph } from '../engine/graph';
+import { GraphEditor } from './GraphEditor';
+
+const start: Graph = {
+  directed: false,
+  vertices: [{ id: 'a', x: 100, y: 100 }, { id: 'b', x: 300, y: 100 }, { id: 'c', x: 200, y: 300 }],
+  edges: [{ u: 'a', v: 'b' }],
+  adjOrder: {},
+};
+
+let latest: Graph;
+function Harness() {
+  const [g, setG] = useState(start);
+  latest = g;
+  return <GraphEditor graph={g} onChange={setG} />;
+}
+
+const vertex = (c: HTMLElement, id: string) => c.querySelector(`[data-vertex="${id}"]`)!;
+
+test('add edge by clicking two vertices', async () => {
+  const { container } = render(<Harness />);
+  await userEvent.click(screen.getByRole('button', { name: 'Add edge' }));
+  fireEvent.pointerDown(vertex(container, 'b'));
+  fireEvent.pointerDown(vertex(container, 'c'));
+  expect(latest.edges).toEqual([{ u: 'a', v: 'b' }, { u: 'b', v: 'c' }]);
+});
+
+test('duplicate edge shows a message', async () => {
+  const { container } = render(<Harness />);
+  await userEvent.click(screen.getByRole('button', { name: 'Add edge' }));
+  fireEvent.pointerDown(vertex(container, 'b'));
+  fireEvent.pointerDown(vertex(container, 'a'));
+  expect(screen.getByRole('alert')).toHaveTextContent('That edge already exists.');
+});
+
+test('select a vertex and delete it', async () => {
+  const { container } = render(<Harness />);
+  fireEvent.pointerDown(vertex(container, 'a'));
+  fireEvent.pointerUp(container.querySelector('svg')!);
+  await userEvent.click(screen.getByRole('button', { name: 'Delete selected' }));
+  expect(latest.vertices.map((v) => v.id)).toEqual(['b', 'c']);
+  expect(latest.edges).toEqual([]);
+});
+
+test('select an edge and delete it', async () => {
+  const { container } = render(<Harness />);
+  fireEvent.click(container.querySelector('[data-edge="a--b"]')!);
+  await userEvent.click(screen.getByRole('button', { name: 'Delete selected' }));
+  expect(latest.edges).toEqual([]);
+});
