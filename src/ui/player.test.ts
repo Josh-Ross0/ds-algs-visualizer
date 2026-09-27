@@ -78,3 +78,17 @@ test('tick at the end stops playback', () => {
   expect(s.playing).toBe(false);
   expect(s.index).toBe(4);
 });
+
+test('feedback clears when moving to next question', () => {
+  const twoQ = [mk(), mk(false, q), mk(false, q)];
+  const r = createPlayerReducer(twoQ, () => true);
+  const actions: PlayerAction[] = [
+    { type: 'next' },
+    { type: 'answer', answer: { kind: 'vertex', value: 'a' } },
+    { type: 'next' },
+  ];
+  const s = actions.reduce(r, initialPlayerState());
+  expect(s.index).toBe(1);
+  expect(s.pending).toBe(2);
+  expect(s.feedback).toBeNull();
+});

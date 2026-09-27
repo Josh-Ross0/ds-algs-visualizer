@@ -33,7 +33,7 @@ export function createPlayerReducer(steps: Step[], asked: (q: Question) => boole
   };
   const moveTo = (s: PlayerState, i: number): PlayerState => ({ ...s, index: i, feedback: null });
   const forwardTo = (s: PlayerState, i: number): PlayerState =>
-    needsAsk(s, i) ? { ...s, pending: i } : moveTo(s, i);
+    needsAsk(s, i) ? { ...s, pending: i, feedback: null } : moveTo(s, i);
 
   return function reducer(s: PlayerState, a: PlayerAction): PlayerState {
     if (s.pending !== null && !['answer', 'skip', 'play', 'pause'].includes(a.type)) return s;
