@@ -1,14 +1,14 @@
 import type { Proc } from '../types';
 
 export const BFS_MAIN = 'BFS';
-export const BFS_INIT = 'BFS Initialization';
+export const BFS_INIT = 'BFS_Initialization';
 
 export const bfsProcs: Proc[] = [
   {
     name: BFS_MAIN,
     signature: 'BFS(G, s)',
     lines: [
-      'BFS Initialization(G, s, Q)',
+      'BFS_Initialization(G, s, Q)',
       'while Q ≠ ∅ do',
       '    u = Dequeue(Q)',
       '    for all v ∈ G.Adj[u] do',
@@ -22,7 +22,7 @@ export const bfsProcs: Proc[] = [
   },
   {
     name: BFS_INIT,
-    signature: 'BFS Initialization(G, s, Q)',
+    signature: 'BFS_Initialization(G, s, Q)',
     lines: [
       'for all v ∈ G.V − {s} do',
       '    v.color = white',
