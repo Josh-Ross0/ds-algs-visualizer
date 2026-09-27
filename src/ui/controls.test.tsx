@@ -50,6 +50,20 @@ test('number question parses input, accepts ∞', async () => {
   expect(onAnswer).toHaveBeenLastCalledWith({ kind: 'number', value: Infinity });
 });
 
+test('number question disables Check button for empty or invalid input', async () => {
+  const onAnswer = vi.fn();
+  render(<QuestionOverlay question={nq} vertices={[]} onAnswer={onAnswer} onSkip={() => {}} />);
+  const checkBtn = screen.getByRole('button', { name: 'Check' });
+  expect(checkBtn).toBeDisabled();
+  await userEvent.type(screen.getByLabelText('Your answer'), 'abc');
+  expect(checkBtn).toBeDisabled();
+  await userEvent.click(checkBtn);
+  expect(onAnswer).not.toHaveBeenCalled();
+  await userEvent.clear(screen.getByLabelText('Your answer'));
+  await userEvent.type(screen.getByLabelText('Your answer'), '5');
+  expect(checkBtn).not.toBeDisabled();
+});
+
 test('feedback shows correct answer and explanation when wrong', () => {
   render(<Feedback correct={false} question={nq} />);
   expect(screen.getByRole('status')).toHaveTextContent('Not quite. The answer is 2. Sum.');

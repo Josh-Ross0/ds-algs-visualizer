@@ -6,6 +6,10 @@ type Props = { question: Question; vertices: string[]; onAnswer(a: Answer): void
 export function QuestionOverlay({ question, vertices, onAnswer, onSkip }: Props) {
   const [text, setText] = useState('');
   const kind = question.answer.kind;
+  const isValidNumber = () => {
+    const t = text.trim();
+    return t !== '' && (t === '∞' || t.toLowerCase() === 'inf' || Number.isFinite(Number(t)));
+  };
   return (
     <div className="question" role="dialog" aria-label="Predict the next step">
       <p className="question-prompt">{question.prompt}</p>
@@ -23,12 +27,13 @@ export function QuestionOverlay({ question, vertices, onAnswer, onSkip }: Props)
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (!isValidNumber()) return;
             const t = text.trim();
             onAnswer({ kind: 'number', value: t === '∞' || t.toLowerCase() === 'inf' ? Infinity : Number(t) });
           }}
         >
           <input aria-label="Your answer" value={text} onChange={(e) => setText(e.target.value)} inputMode="numeric" />
-          <button type="submit">Check</button>
+          <button type="submit" disabled={!isValidNumber()}>Check</button>
         </form>
       )}
       {kind === 'yesno' && (
