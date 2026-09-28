@@ -1,6 +1,6 @@
 import { moveInAdjacency } from '../../engine/graph';
 import type { Step } from '../../engine/trace';
-import { assertValidTrace } from '../testing';
+import { assertQuestionsPredictable, assertValidTrace } from '../testing';
 import { bfs } from './index';
 import { runBfs } from './run';
 
@@ -63,6 +63,19 @@ test('questions: one per dequeue, one per discovered vertex', () => {
   expect(dist.every((s) => s.line === 7)).toBe(true);
   const v6 = dist.find((s) => s.vars.v === 'v6')!;
   expect(v6.question!.answer).toEqual({ kind: 'number', value: 3 });
+});
+
+test('questions are predictable from the step shown before them', () => {
+  const steps = runBfs(lecture.graph, lecture.params);
+  assertQuestionsPredictable(steps, (prev, step) => {
+    const q = step.question!;
+    if (q.type === 'bfs.dequeue') {
+      expect(prev.ds[0].items[0]).toBe(q.answer.value);
+    } else if (q.type === 'bfs.distance') {
+      const v = step.vars.v as string;
+      expect(prev.vertexState[v].d).toBe(Infinity);
+    }
+  });
 });
 
 test('tree edges follow π', () => {

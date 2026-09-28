@@ -64,6 +64,16 @@ test('number question disables Check button for empty or invalid input', async (
   expect(checkBtn).not.toBeDisabled();
 });
 
+test('vertex question focuses the first choice button on mount', () => {
+  render(<QuestionOverlay question={vq} vertices={['a', 'b']} onAnswer={() => {}} onSkip={() => {}} />);
+  expect(screen.getByRole('button', { name: 'a' })).toHaveFocus();
+});
+
+test('number question focuses the input on mount', () => {
+  render(<QuestionOverlay question={nq} vertices={[]} onAnswer={() => {}} onSkip={() => {}} />);
+  expect(screen.getByLabelText('Your answer')).toHaveFocus();
+});
+
 test('feedback shows correct answer and explanation when wrong', () => {
   render(<Feedback correct={false} question={nq} />);
   expect(screen.getByRole('status')).toHaveTextContent('Not quite. The answer is 2. Sum.');

@@ -20,7 +20,7 @@ export function PlayerControls({ state, total, dispatch, speedMs, onSpeed }: Pro
         {btn('Previous big step', '⏪', { type: 'bigPrev' })}
         {btn('Previous step', '◀', { type: 'prev' })}
         {state.playing ? btn('Pause', '⏸', { type: 'pause' }) : btn('Play', '▶︎', { type: 'play' })}
-        {btn('Next step', '▶', { type: 'next' })}
+        {btn('Next step', '⏵', { type: 'next' })}
         {btn('Next big step', '⏩', { type: 'bigNext' })}
         {btn('End', '⏭', { type: 'seek', index: total - 1 })}
       </div>

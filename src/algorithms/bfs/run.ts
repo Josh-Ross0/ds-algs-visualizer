@@ -37,7 +37,7 @@ export function runBfs(g: Graph, params: Params): Step[] {
     }));
   };
 
-  // BFS line 1 → BFS Initialization
+  // BFS line 1 → BFS_Initialization
   emit(BFS_MAIN, 1, { vertices: [s] });
   for (const v of V.filter((x) => x !== s)) {
     vars = { s, v };

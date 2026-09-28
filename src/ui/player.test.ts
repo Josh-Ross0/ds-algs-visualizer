@@ -55,6 +55,14 @@ test('questions not asked when disabled', () => {
   expect(run([{ type: 'next' }, { type: 'next' }], false).index).toBe(2);
 });
 
+test('bigNext into a question step several steps ahead shows the step just before it', () => {
+  const farSteps = [mk(), mk(), mk(), mk(false, q)];
+  const r = createPlayerReducer(farSteps, () => true);
+  const s = r(initialPlayerState(), { type: 'bigNext' });
+  expect(s.pending).toBe(3);
+  expect(s.index).toBe(2);
+});
+
 test('bigNext stops at question steps, then big steps, then the end', () => {
   expect(run([{ type: 'bigNext' }]).index).toBe(1);
   expect(run([{ type: 'bigNext' }, { type: 'bigNext' }]).pending).toBe(2);
