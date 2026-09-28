@@ -43,6 +43,7 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
           graph={graph}
           step={step}
           weighted={def.weighted}
+          plainVertices={def.stateColumns.length === 0}
           onVertexPointerDown={
             pending?.answer.kind === 'vertex'
               ? (id) => dispatch({ type: 'answer', answer: { kind: 'vertex', value: id } })

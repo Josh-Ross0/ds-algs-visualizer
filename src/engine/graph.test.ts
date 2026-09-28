@@ -1,7 +1,7 @@
 import {
-  addEdge, addVertex, adjacency, canAddVertex, compareLabels, DEFAULT_WEIGHT, edgeKey, edgeList, hasEdge,
-  MAX_VERTICES, moveInAdjacency, moveInEdgeList, moveVertex, nextLabel, removeEdge, removeVertex, resetAdjacency,
-  resetEdgeOrder, setDirected, setWeight, vertexIds, weightOf, type Graph,
+  addEdge, addVertex, adjacency, canAddVertex, compareLabels, DEFAULT_WEIGHT, edgeKey, edgeList, edgeName, hasEdge,
+  isConnected, MAX_VERTICES, moveInAdjacency, moveInEdgeList, moveVertex, nextLabel, removeEdge, removeVertex,
+  resetAdjacency, resetEdgeOrder, setDirected, setWeight, vertexIds, weightOf, type Graph,
 } from './graph';
 
 function g(directed: boolean, ids: string[], edges: [string, string][]): Graph {
@@ -144,4 +144,17 @@ test('removing an edge or vertex prunes edgeOrder, so a re-added edge goes back 
 test('edgeList appends edges missing from a custom order in label order', () => {
   const G = { ...wg([['s', 'a', 1], ['a', 'b', 1], ['s', 'b', 1]]), edgeOrder: ['s->b', 'gone->x'] };
   expect(edgeList(G).map((e) => `${e.u}->${e.v}`)).toEqual(['s->b', 'a->b', 's->a']);
+});
+
+test('edgeName orders undirected endpoints by label and keeps direction otherwise', () => {
+  expect(edgeName(g(false, ['a', 'r'], []), { u: 'r', v: 'a' })).toBe('(a, r)');
+  expect(edgeName(g(true, ['a', 'r'], []), { u: 'r', v: 'a' })).toBe('(r, a)');
+});
+
+test('isConnected ignores direction; the empty graph counts as connected', () => {
+  expect(isConnected(g(false, ['a', 'b', 'c'], [['a', 'b'], ['c', 'b']]))).toBe(true);
+  expect(isConnected(g(true, ['a', 'b', 'c'], [['b', 'a'], ['c', 'b']]))).toBe(true);
+  expect(isConnected(g(false, ['a', 'b', 'c'], [['a', 'b']]))).toBe(false);
+  expect(isConnected(g(false, ['a'], []))).toBe(true);
+  expect(isConnected(g(false, [], []))).toBe(true);
 });

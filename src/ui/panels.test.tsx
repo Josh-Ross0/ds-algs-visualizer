@@ -4,6 +4,7 @@ import type { Graph } from '../engine/graph';
 import type { Step } from '../engine/trace';
 import { AdjacencyPanel } from './AdjacencyPanel';
 import { DSPanel } from './DSPanel';
+import { EdgeListPanel } from './EdgeListPanel';
 import { PseudocodePanel } from './PseudocodePanel';
 import { StatePanel } from './StatePanel';
 
@@ -87,4 +88,21 @@ test('ds panel lists a keyed set with each key', () => {
   expect(screen.getByText('(by d)')).toBeInTheDocument();
   const items = within(screen.getByLabelText('Q contents')).getAllByText(/\w/).map((e) => e.textContent);
   expect(items).toEqual(['a.d = 3', 'b.d = ∞']);
+});
+
+test('state panel with no columns shows the variables but no table', () => {
+  render(<StatePanel columns={[]} vertices={['a']} step={{ ...step, vars: { i: 2 } }} />);
+  expect(screen.getByText('i = 2')).toBeInTheDocument();
+  expect(screen.queryByRole('table')).toBeNull();
+});
+
+test('edge list names undirected edges with endpoints in label order', () => {
+  const g: Graph = {
+    directed: false,
+    vertices: [{ id: 'a', x: 0, y: 0 }, { id: 'r', x: 0, y: 0 }],
+    edges: [{ u: 'r', v: 'a', w: 4 }],
+    adjOrder: {},
+  };
+  render(<EdgeListPanel graph={g} onMove={() => {}} onReset={() => {}} />);
+  expect(screen.getByLabelText('G.E')).toHaveTextContent('(a, r)');
 });

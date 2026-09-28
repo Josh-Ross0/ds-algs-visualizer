@@ -161,6 +161,8 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .edge.tree .edge-line { stroke: var(--tree); stroke-width: 4.5; stroke-linecap: round; }
 .edge.active .edge-line { stroke: var(--marker); stroke-width: 4; stroke-dasharray: 7 5; }
 .edge.selected .edge-line { stroke: var(--red); stroke-width: 4; }
+/* The cycle a rejected edge would close (Kruskal): dotted red, distinct from the dashed active edge. */
+.edge.cycle .edge-line { stroke: var(--red); stroke-width: 4; stroke-dasharray: 2 7; stroke-linecap: round; }
 .arrow-head { fill: var(--edge); }
 .arrow-head.tree { fill: var(--tree); }
 .arrow-head.active { fill: var(--marker); }

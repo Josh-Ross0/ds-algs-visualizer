@@ -68,3 +68,16 @@ test('a vertex with state but no color is plain; settled vertices are marked', (
   expect(container.querySelector('[data-vertex="b"]')).toHaveClass('v-none');
   expect(container.querySelector('[data-vertex="b"]')).not.toHaveClass('settled');
 });
+
+test('edges in highlight.cycle get the cycle class', () => {
+  const { container } = render(<GraphCanvas graph={graph} step={{ ...step, highlight: { cycle: ['a--b'] } }} />);
+  expect(container.querySelector('[data-edge="a--b"]')).toHaveClass('cycle');
+});
+
+test('plainVertices draws vertices without state as plain, not as "no state yet"', () => {
+  const s: Step = { ...step, vertexState: {} };
+  const { container, rerender } = render(<GraphCanvas graph={graph} step={s} plainVertices />);
+  expect(container.querySelector('[data-vertex="a"]')).toHaveClass('v-plain');
+  rerender(<GraphCanvas graph={graph} step={s} />);
+  expect(container.querySelector('[data-vertex="a"]')).toHaveClass('v-none');
+});

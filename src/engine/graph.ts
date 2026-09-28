@@ -173,3 +173,28 @@ export function moveInEdgeList(g: Graph, index: number, delta: number): Graph {
 export function resetEdgeOrder(g: Graph): Graph {
   return { ...g, edgeOrder: undefined };
 }
+
+// "(u, v)" as the lecture writes an edge; undirected endpoints in label order.
+export function edgeName(g: Graph, e: Edge): string {
+  const [a, b] = endpointsByLabel(g, e);
+  return `(${a}, ${b})`;
+}
+
+// True when every vertex is reachable from every other, ignoring edge direction.
+export function isConnected(g: Graph): boolean {
+  const ids = vertexIds(g);
+  if (ids.length === 0) return true;
+  const seen = new Set([ids[0]]);
+  const stack = [ids[0]];
+  while (stack.length > 0) {
+    const x = stack.pop()!;
+    for (const e of g.edges) {
+      const y = e.u === x ? e.v : e.v === x ? e.u : null;
+      if (y !== null && !seen.has(y)) {
+        seen.add(y);
+        stack.push(y);
+      }
+    }
+  }
+  return seen.size === ids.length;
+}

@@ -12,22 +12,24 @@ export function StatePanel({ columns, vertices, step }: Props) {
           {vars.map(([k, v]) => <span key={k}>{`${k} = ${formatValue(v)}`}</span>)}
         </p>
       )}
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">v</th>
-            {columns.map((c) => <th key={c.key} scope="col">{c.label}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {vertices.map((v) => (
-            <tr key={v}>
-              <th scope="row">{v}</th>
-              {columns.map((c) => <td key={c.key}>{formatValue(step.vertexState[v]?.[c.key])}</td>)}
+      {columns.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">v</th>
+              {columns.map((c) => <th key={c.key} scope="col">{c.label}</th>)}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {vertices.map((v) => (
+              <tr key={v}>
+                <th scope="row">{v}</th>
+                {columns.map((c) => <td key={c.key}>{formatValue(step.vertexState[v]?.[c.key])}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       {step.note && <p className="note">{step.note}</p>}
     </div>
   );

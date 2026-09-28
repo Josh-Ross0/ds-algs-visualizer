@@ -15,7 +15,14 @@ export type Answer =
   | { kind: 'yesno'; value: boolean }
   | { kind: 'choice'; value: string; options: string[] };
 export type Question = { type: string; prompt: string; answer: Answer; explain: string };
-export type Highlight = { vertices?: string[]; edges?: string[]; treeEdges?: string[]; settled?: string[] };
+export type Highlight = {
+  vertices?: string[];
+  edges?: string[];
+  treeEdges?: string[];
+  settled?: string[];
+  // Edges of the cycle a rejected edge would close (Kruskal).
+  cycle?: string[];
+};
 export type Step = {
   proc: string;
   line: number;
