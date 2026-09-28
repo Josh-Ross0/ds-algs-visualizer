@@ -42,3 +42,29 @@ test('Run is blocked without a source', async () => {
   expect(screen.getByRole('alert')).toHaveTextContent('Choose a source vertex s.');
   expect(screen.getByRole('button', { name: 'Run' })).toBeInTheDocument();
 });
+
+test('home lists DFS', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /Depth-First Search/ })).toHaveAttribute('href', '#/dfs');
+});
+
+test('DFS page: first question, final times, no edge types on screen', async () => {
+  window.location.hash = '#/dfs';
+  render(<App />);
+  expect(screen.getByRole('heading', { name: 'Depth-First Search (DFS)' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  const dialog = screen.getByRole('dialog', { name: 'Predict the next step' });
+  expect(dialog).toHaveTextContent('Which vertex will DFS discover next?');
+  await userEvent.click(within(dialog).getByRole('button', { name: 'v1' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+
+  await userEvent.click(screen.getByLabelText('Predict mode'));
+  await userEvent.click(screen.getByRole('button', { name: 'End' }));
+  const rowV6 = screen.getByRole('row', { name: /^v6/ });
+  expect(rowV6).toHaveTextContent('11');
+  expect(rowV6).toHaveTextContent('16');
+  expect(screen.getByLabelText('Call stack contents')).toHaveTextContent('DFS(G)');
+  expect(document.body).not.toHaveTextContent(/\b(forward|crossing)\b/);
+});
