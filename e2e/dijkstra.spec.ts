@@ -4,7 +4,7 @@ test('edit a weight, run Dijkstra, answer Extract_Min by clicking the graph', as
   await page.goto('/#/dijkstra');
   // exact: the pseudocode heading "Dijkstra(G, w, s)" would also match a substring search.
   await expect(page.getByRole('heading', { name: 'Dijkstra', exact: true })).toBeVisible();
-  await page.locator('[data-edge="s->v1"] .edge-hit').click();
+  await page.locator('[data-edge="s->v1"]').click();
   await page.getByLabel('Weight w(s, v1)').fill('10');
   await expect(page.locator('[data-edge="s->v1"] .edge-weight')).toHaveText('10');
 
