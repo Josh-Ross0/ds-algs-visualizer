@@ -93,10 +93,42 @@ test('feedback clears when moving to next question', () => {
   const actions: PlayerAction[] = [
     { type: 'next' },
     { type: 'answer', answer: { kind: 'vertex', value: 'a' } },
+    { type: 'continue' },
     { type: 'next' },
   ];
   const s = actions.reduce(r, initialPlayerState());
   expect(s.index).toBe(1);
   expect(s.pending).toBe(2);
   expect(s.feedback).toBeNull();
+});
+
+test('after an answer, forward moves wait for continue; continue resumes playback', () => {
+  const r = createPlayerReducer(steps, () => true);
+  const actions: PlayerAction[] = [
+    { type: 'play' }, { type: 'tick' }, { type: 'tick' },
+    { type: 'answer', answer: { kind: 'vertex', value: 'a' } },
+  ];
+  const answered = actions.reduce(r, initialPlayerState());
+  expect(answered).toMatchObject({ index: 2, playing: false, feedback: { correct: true } });
+  for (const type of ['tick', 'next', 'bigNext', 'play'] as const) {
+    expect(r(answered, { type })).toBe(answered);
+  }
+  expect(r(answered, { type: 'continue' })).toMatchObject({ index: 2, playing: true, feedback: null });
+});
+
+test('continue does not start playback that was not running', () => {
+  const s = run([
+    { type: 'next' }, { type: 'next' },
+    { type: 'answer', answer: { kind: 'vertex', value: 'b' } },
+    { type: 'continue' },
+  ]);
+  expect(s).toMatchObject({ index: 2, playing: false, feedback: null });
+});
+
+test('going back or seeking leaves the result', () => {
+  const answered: PlayerAction[] = [
+    { type: 'next' }, { type: 'next' }, { type: 'answer', answer: { kind: 'vertex', value: 'a' } },
+  ];
+  expect(run([...answered, { type: 'prev' }])).toMatchObject({ index: 1, feedback: null });
+  expect(run([...answered, { type: 'seek', index: 0 }])).toMatchObject({ index: 0, feedback: null });
 });

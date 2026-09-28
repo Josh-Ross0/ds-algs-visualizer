@@ -78,10 +78,19 @@ export function QuestionOverlay({ question, vertices, onAnswer, onSkip }: Props)
   );
 }
 
-export function Feedback({ correct, question }: { correct: boolean; question: Question }) {
+type FeedbackProps = { correct: boolean; question: Question; onContinue(): void };
+
+export function Feedback({ correct, question, onContinue }: FeedbackProps) {
+  const continueRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    continueRef.current?.focus();
+  }, []);
   return (
-    <p role="status" className={correct ? 'feedback good' : 'feedback bad'}>
-      {correct ? `Correct. ${question.explain}` : `Not quite. The answer is ${formatAnswer(question.answer)}. ${question.explain}`}
-    </p>
+    <div className={correct ? 'feedback result good' : 'feedback result bad'}>
+      <p role="status">
+        {correct ? `Correct. ${question.explain}` : `Not quite. The answer is ${formatAnswer(question.answer)}. ${question.explain}`}
+      </p>
+      <button ref={continueRef} type="button" className="primary" onClick={onContinue}>Continue</button>
+    </div>
   );
 }

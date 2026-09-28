@@ -17,7 +17,7 @@ Items found during Plan 1 reviews and deliberately deferred. Later plans must pi
 
 ## Plan 3 (Bellman-Ford, Dijkstra)
 
-- Focus restore after a question closes (added in plan 2, `Visualizer.tsx`) also fires when a settings change auto-skips the open question (`usePlayer.ts`), pulling focus off the settings checkbox. Restore focus only when the close came from an answer or skip action, and add a test that toggles Predict mode while a question is open.
+- ~~Focus restore also fires when a settings change auto-skips the open question.~~ Closed on branch `continue-after-answer`: focus returns only after Continue or Skip, with a test.
 
 - `AlgorithmDef.weighted` is currently unused: add weight entry in the editor, weight labels on the canvas, and tests for `moveVertex` and weighted `addEdge`.
 - Registry test: each preset's `graph.directed` matches `def.directed` unless it is `'toggle'`; the page should force direction for fixed-direction algorithms.

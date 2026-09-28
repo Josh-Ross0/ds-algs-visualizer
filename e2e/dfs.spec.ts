@@ -39,6 +39,10 @@ test('edge-type question can be answered with the keyboard', async ({ page }) =>
   await expect(page.getByRole('button', { name: 'back' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status')).toContainText('Correct.');
+  // The result stays until Continue, which takes focus.
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('status')).toHaveCount(0);
   // Focus returns to the player control used to advance, not to <body>.
   await expect(nextBigStep).toBeFocused();
 });

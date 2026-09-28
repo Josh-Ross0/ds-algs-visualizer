@@ -94,8 +94,18 @@ test('number question focuses the input on mount', () => {
 });
 
 test('feedback shows correct answer and explanation when wrong', () => {
-  render(<Feedback correct={false} question={nq} />);
+  render(<Feedback correct={false} question={nq} onContinue={() => {}} />);
   expect(screen.getByRole('status')).toHaveTextContent('Not quite. The answer is 2. Sum.');
+});
+
+test('feedback has a focused Continue button that reports the click', async () => {
+  const onContinue = vi.fn();
+  render(<Feedback correct question={nq} onContinue={onContinue} />);
+  expect(screen.getByRole('status')).toHaveTextContent('Correct. Sum.');
+  const cont = screen.getByRole('button', { name: 'Continue' });
+  expect(cont).toHaveFocus();
+  await userEvent.click(cont);
+  expect(onContinue).toHaveBeenCalledTimes(1);
 });
 
 test('settings toggles predict mode and question types', async () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import type { AlgorithmDef } from '../algorithms/types';
 import { vertexIds, type Graph } from '../engine/graph';
 import type { Step } from '../engine/trace';
@@ -27,16 +27,14 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
   const pending = state.pending !== null ? steps[state.pending].question! : null;
   const vertices = vertexIds(graph);
 
-  // When a pending question closes (answer or skip), the dialog unmounts and
-  // focus would otherwise fall to <body>. Send it back to the player control.
+  // After Skip or Continue the dialog or result unmounts and focus would fall to
+  // <body>, so send it back to the player control. Only these two actions do it:
+  // a question closed by a settings change must not pull focus off the settings.
   const playerRef = useRef<PlayerControlsHandle>(null);
-  const wasPending = useRef(state.pending);
-  useEffect(() => {
-    if (wasPending.current !== null && state.pending === null) {
-      playerRef.current?.restoreFocus();
-    }
-    wasPending.current = state.pending;
-  }, [state.pending]);
+  const closeAndRestoreFocus = (type: 'skip' | 'continue') => {
+    dispatch({ type });
+    playerRef.current?.restoreFocus();
+  };
 
   return (
     <div className="layout">
@@ -56,10 +54,10 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
             question={pending}
             vertices={vertices}
             onAnswer={(answer) => dispatch({ type: 'answer', answer })}
-            onSkip={() => dispatch({ type: 'skip' })}
+            onSkip={() => closeAndRestoreFocus('skip')}
           />
         )}
-        {state.feedback && <Feedback {...state.feedback} />}
+        {state.feedback && <Feedback {...state.feedback} onContinue={() => closeAndRestoreFocus('continue')} />}
         <PlayerControls
           ref={playerRef}
           state={state}
