@@ -266,6 +266,8 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .feedback.bad { border-color: var(--red); background: color-mix(in srgb, var(--red) 14%, transparent); }
 .feedback.warn { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 16%, transparent); }
 .algo-page > .feedback { margin-bottom: 12px; }
+.feedback.result { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; padding: 12px 14px; }
+.feedback.result p { margin: 0; flex: 1 1 16em; }
 
 /* ---------- Settings ---------- */
 .settings { display: flex; flex-direction: column; gap: 8px; margin: 0; border: none; border-top: 1px solid var(--rule); min-width: 0; }

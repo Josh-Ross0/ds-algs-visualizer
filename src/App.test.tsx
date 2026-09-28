@@ -34,6 +34,18 @@ test('BFS page: run, answer first question, reach the end', async () => {
   expect(rowV7).toHaveTextContent('v5');
 });
 
+test('turning off Predict mode while a question is open keeps focus on the checkbox', async () => {
+  window.location.hash = '#/bfs';
+  render(<App />);
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  expect(screen.getByRole('dialog', { name: 'Predict the next step' })).toBeInTheDocument();
+  const predict = screen.getByLabelText('Predict mode');
+  await userEvent.click(predict);
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(predict).toHaveFocus();
+});
+
 test('Run is blocked without a source', async () => {
   window.location.hash = '#/bfs';
   render(<App />);
@@ -60,7 +72,19 @@ test('DFS page: first question, final times, no edge types on screen', async () 
   expect(dialog).toHaveTextContent('Which vertex will DFS discover next?');
   await userEvent.click(within(dialog).getByRole('button', { name: 'v1' }));
   expect(screen.getByRole('status')).toHaveTextContent('Correct.');
-  expect(bigNext).toHaveFocus();
+
+  // The result stays until Continue: stepping forward is held.
+  const continueButton = screen.getByRole('button', { name: 'Continue' });
+  expect(continueButton).toHaveFocus();
+  const position = screen.getByText(/^Step \d+ \/ \d+$/).textContent;
+  await userEvent.click(screen.getByRole('button', { name: 'Next step' }));
+  expect(screen.getByText(/^Step \d+ \/ \d+$/)).toHaveTextContent(position!);
+  expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+
+  await userEvent.click(continueButton);
+  expect(screen.queryByRole('status')).toBeNull();
+  // Focus returns to the player button used last (the held "Next step" click).
+  expect(screen.getByRole('button', { name: 'Next step' })).toHaveFocus();
 
   await userEvent.click(screen.getByLabelText('Predict mode'));
   await userEvent.click(screen.getByRole('button', { name: 'End' }));

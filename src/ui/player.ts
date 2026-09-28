@@ -7,14 +7,16 @@ export type PlayerState = {
   pending: number | null;
   outcomes: Record<number, Outcome>;
   feedback: { correct: boolean; question: Question } | null;
+  // Whether playback was running when the answered question was asked; Continue resumes it.
+  resume: boolean;
 };
 export type PlayerAction =
-  | { type: 'next' | 'prev' | 'bigNext' | 'bigPrev' | 'play' | 'pause' | 'tick' | 'skip' }
+  | { type: 'next' | 'prev' | 'bigNext' | 'bigPrev' | 'play' | 'pause' | 'tick' | 'skip' | 'continue' }
   | { type: 'seek'; index: number }
   | { type: 'answer'; answer: Answer };
 
 export function initialPlayerState(): PlayerState {
-  return { index: 0, playing: false, pending: null, outcomes: {}, feedback: null };
+  return { index: 0, playing: false, pending: null, outcomes: {}, feedback: null, resume: false };
 }
 
 export function score(s: PlayerState): { correct: number; answered: number } {
@@ -31,12 +33,14 @@ export function createPlayerReducer(steps: Step[], asked: (q: Question) => boole
     const q = steps[i].question;
     return q !== undefined && asked(q) && s.outcomes[i] === undefined;
   };
-  const moveTo = (s: PlayerState, i: number): PlayerState => ({ ...s, index: i, feedback: null });
+  const moveTo = (s: PlayerState, i: number): PlayerState => ({ ...s, index: i, feedback: null, resume: false });
   const forwardTo = (s: PlayerState, i: number): PlayerState =>
     needsAsk(s, i) ? { ...s, index: i - 1, pending: i, feedback: null } : moveTo(s, i);
 
   return function reducer(s: PlayerState, a: PlayerAction): PlayerState {
     if (s.pending !== null && !['answer', 'skip', 'play', 'pause'].includes(a.type)) return s;
+    // A shown result holds forward movement until the student presses Continue.
+    if (s.feedback !== null && ['next', 'tick', 'bigNext', 'play'].includes(a.type)) return s;
     switch (a.type) {
       case 'next':
       case 'tick':
@@ -69,11 +73,15 @@ export function createPlayerReducer(steps: Step[], asked: (q: Question) => boole
           ...s,
           index: s.pending,
           pending: null,
-          playing: correct && s.playing,
+          playing: false,
+          resume: s.playing,
           outcomes: { ...s.outcomes, [s.pending]: correct ? 'correct' : 'wrong' },
           feedback: { correct, question },
         };
       }
+      case 'continue':
+        if (s.feedback === null) return s;
+        return { ...s, feedback: null, playing: s.resume, resume: false };
       case 'skip':
         if (s.pending === null) return s;
         return {
