@@ -45,7 +45,7 @@ export function runPrim(g: Graph, params: Params): Step[] {
     emit(3, { vertices: [u] });
   }
   vars = { r };
-  emit(4, { vertices: [r], note: `r = ${r}, the root chosen above the graph.` });
+  emit(4, { vertices: [r], note: `The root chosen above the graph is ${r}.` });
   st[r].key = 0;
   emit(5, { vertices: [r] });
   Q = [...V];

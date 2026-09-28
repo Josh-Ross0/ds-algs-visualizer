@@ -1,4 +1,4 @@
-import { DEFAULT_WEIGHT, edgeKey, edgeList, edgeName, type Edge, type Graph } from '../../engine/graph';
+import { DEFAULT_WEIGHT, edgeKey, edgeList, edgeName, endpointsByLabel, type Edge, type Graph } from '../../engine/graph';
 import type { Question, Step, Value } from '../../engine/trace';
 import { forestPath } from './forest';
 import { KRUSKAL } from './pseudocode';
@@ -24,7 +24,7 @@ export function runKruskal(g: Graph): Step[] {
       vars,
       ds: [
         { kind: 'edges' as const, name: 'A', items: A.map((e) => `${edgeName(g, e)}: ${weight(e)}`), current },
-        { kind: 'edges' as const, name: 'T', items: T.map((e) => edgeName(g, e)), current: null },
+        { kind: 'edges' as const, name: 'T', items: T.map((e) => edgeName(g, e)), current: null, label: '(in order added)' },
       ],
       highlight: { edges: o.edges, treeEdges: T.map(key), cycle: o.cycle },
       note: o.note,
@@ -47,7 +47,8 @@ export function runKruskal(g: Graph): Step[] {
     const name = edgeName(g, e);
     vars = { i, e: name };
     emit(5, { edges: [key(e)] });
-    const path = forestPath(T, e.u, e.v);
+    const [lu, lv] = endpointsByLabel(g, e);
+    const path = forestPath(T, lu, lv);
     const cycle = path === null
       ? undefined
       : [...path.slice(1).map((x, k) => edgeKey(g, path[k], x)), key(e)];
@@ -55,9 +56,9 @@ export function runKruskal(g: Graph): Step[] {
       edges: [key(e)],
       cycle,
       note: path === null
-        ? `T has no path between ${e.u} and ${e.v}, so T ∪ {${name}} is cycle free.`
+        ? `T has no path between ${lu} and ${lv}, so T ∪ {${name}} is cycle free.`
         : `T ∪ {${name}} has the cycle ${[...path, path[0]].join(' – ')}.`,
-      question: acceptQuestion(name, e.u, e.v, path),
+      question: acceptQuestion(name, lu, lv, path),
     });
     if (path !== null) continue;
     T = [...T, e];

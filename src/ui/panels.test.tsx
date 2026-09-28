@@ -83,6 +83,12 @@ test('ds panel shows the edge list and marks the current edge', () => {
   expect(within(screen.getByLabelText('G.E contents')).getByText('(s, a)')).not.toHaveClass('current');
 });
 
+test('ds panel shows a custom label on an edges view instead of the default', () => {
+  render(<DSPanel ds={[{ kind: 'edges', name: 'T', items: ['(c, d)'], current: null, label: '(in order added)' }]} />);
+  expect(screen.getByText('(in order added)')).toBeInTheDocument();
+  expect(screen.queryByText('(scan order)')).not.toBeInTheDocument();
+});
+
 test('ds panel lists a keyed set with each key', () => {
   render(<DSPanel ds={[{ kind: 'keyed', name: 'Q', key: 'd', items: [{ id: 'a', value: 3 }, { id: 'b', value: Infinity }] }]} />);
   expect(screen.getByText('(by d)')).toBeInTheDocument();

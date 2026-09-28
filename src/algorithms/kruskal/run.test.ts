@@ -68,7 +68,8 @@ test('a rejected edge highlights the cycle it would close', () => {
 });
 
 test('equal weights follow the displayed G.E order', () => {
-  // Swap (c, f) (index 7) and (d, f) (index 9) in G.E: now (d, f) comes first among the weight-4 edges.
+  // moveInEdgeList(g, 9, -2) moves (d, f) (index 9) two spots earlier: (d, f) moves ahead of
+  // (c, f) (index 7) among the weight-4 edges.
   const g = moveInEdgeList(lecture.graph, 9, -2);
   const d = decisions(runKruskal(g));
   expect(d).toContain('(d, f)+');
@@ -86,6 +87,18 @@ test('an edge drawn from r to a is named (a, r) in A and T', () => {
   const end = last(runKruskal(g));
   expect(items(end, 0)).toEqual(['(a, r): 3']);
   expect(items(end, 1)).toEqual(['(a, r)']);
+});
+
+test('line-6 prose uses endpoints in label order even when the edge is drawn r to a', () => {
+  const g: Graph = {
+    directed: false,
+    vertices: [{ id: 'a', x: 60, y: 60 }, { id: 'r', x: 200, y: 60 }],
+    edges: [{ u: 'r', v: 'a', w: 3 }],
+    adjOrder: {},
+  };
+  const s = last(runKruskal(g).filter((x) => x.line === 6));
+  expect(s.note).toBe('T has no path between a and r, so T ∪ {(a, r)} is cycle free.');
+  expect(s.question!.explain).toContain('between a and r');
 });
 
 test('questions: one per edge, predictable from the step before', () => {

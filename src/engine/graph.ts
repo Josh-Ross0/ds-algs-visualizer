@@ -145,7 +145,7 @@ export function resetAdjacency(g: Graph): Graph {
   return { ...g, adjOrder: {} };
 }
 
-function endpointsByLabel(g: Graph, e: Edge): [string, string] {
+export function endpointsByLabel(g: Graph, e: Edge): [string, string] {
   if (g.directed || compareLabels(e.u, e.v) <= 0) return [e.u, e.v];
   return [e.v, e.u];
 }

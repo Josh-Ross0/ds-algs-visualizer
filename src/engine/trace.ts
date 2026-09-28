@@ -6,7 +6,8 @@ export type DSView =
   | { kind: 'queue'; name: string; items: string[] }
   | { kind: 'stack'; name: string; items: string[] }
   // An ordered edge list; `current` is the index being scanned, if any.
-  | { kind: 'edges'; name: string; items: string[]; current: number | null }
+  // `label` overrides the default "(scan order)" orientation label (e.g. Kruskal's T).
+  | { kind: 'edges'; name: string; items: string[]; current: number | null; label?: string }
   // A set shown sorted by one attribute (e.g. Dijkstra's Q by d).
   | { kind: 'keyed'; name: string; key: string; items: { id: string; value: Value }[] };
 export type Answer =

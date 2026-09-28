@@ -11,7 +11,7 @@ function getOrientationLabel(d: DSView): string {
     case 'stack':
       return '(bottom → top)';
     case 'edges':
-      return '(scan order)';
+      return d.label ?? '(scan order)';
     case 'keyed':
       return `(by ${d.key})`;
     default:
