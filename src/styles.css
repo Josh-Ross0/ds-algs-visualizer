@@ -352,6 +352,11 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .algo-title { font-size: 20px; font-weight: 700; }
 .algo-sig { color: var(--muted); font-size: 16px; }
 .algo-list a:hover .algo-title { text-decoration: underline; }
+.list-title { font-size: 16px; font-weight: 700; margin: 32px 0 0; }
+.list-title + .algo-list { margin-top: 8px; }
+.key-input { width: 6em; }
+.key-input[aria-invalid='true'] { border-color: var(--red); }
+.keep-result { margin: 4px 0 12px; }
 .excerpt { margin: 0; }
 .excerpt .excerpt-sig { margin: 0 0 8px; font-size: 16px; font-weight: 700; font-family: var(--font-code); }
 .excerpt .pseudocode ol { font-size: 16px; }

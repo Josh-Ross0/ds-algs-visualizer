@@ -1,0 +1,118 @@
+import { useState } from 'react';
+import { findKey, inorder, type NodeId } from '../engine/tree';
+import type { StructureDef, TreeStep } from '../structures/types';
+import { DSPanel } from './DSPanel';
+import { Player } from './Player';
+import { PseudocodePanel } from './PseudocodePanel';
+import { useSettings } from './settings';
+import { StatePanel } from './StatePanel';
+import { TreeCanvas } from './TreeCanvas';
+
+const parseKey = (text: string): number | null => (/^-?\d+$/.test(text.trim()) ? Number(text.trim()) : null);
+
+export function StructurePage({ def }: { def: StructureDef }) {
+  const [presetIndex, setPresetIndex] = useState(0);
+  const [tree, setTree] = useState(() => def.build(def.presets[0].keys));
+  const [opId, setOpId] = useState(def.operations[0].id);
+  const [keyText, setKeyText] = useState('');
+  const [steps, setSteps] = useState<TreeStep[] | null>(null);
+  const [runId, setRunId] = useState(0);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [settings, setSettings] = useSettings();
+
+  const op = def.operations.find((o) => o.id === opId)!;
+  const procs = op.procs.map((name) => def.procs.find((p) => p.name === name)!);
+  const needsKey = op.input !== 'none';
+  const key = parseKey(keyText);
+  const selected: NodeId | null = op.input === 'node' && key !== null ? findKey(tree, key) : null;
+
+  const loadPreset = (i: number) => {
+    setPresetIndex(i);
+    setTree(def.build(def.presets[i].keys));
+    setErrors([]);
+  };
+  const run = () => {
+    const k = needsKey ? key : null;
+    const e = def.validate(tree, op.id, k);
+    setErrors(e);
+    if (e.length > 0) return;
+    setSteps(def.run(tree, op.id, k));
+    setRunId((r) => r + 1);
+  };
+  const keep = () => {
+    setTree(steps![steps!.length - 1].view.tree);
+    setSteps(null);
+  };
+
+  return (
+    <div className="algo-page">
+      <header className="page-header">
+        <a href="#/">← All topics</a>
+        <h1>{def.title}</h1>
+      </header>
+      <div className="toolbar">
+        <label>
+          Preset
+          <select value={presetIndex} disabled={steps !== null} onChange={(e) => loadPreset(Number(e.target.value))}>
+            {def.presets.map((p, i) => <option key={p.name} value={i}>{p.name}</option>)}
+          </select>
+        </label>
+        <button type="button" disabled={steps !== null} onClick={() => loadPreset(presetIndex)}>Reset to preset</button>
+        <button type="button" disabled={steps !== null} onClick={() => { setTree(def.build([])); setErrors([]); }}>Clear</button>
+        <label>
+          Operation
+          <select value={opId} disabled={steps !== null} onChange={(e) => { setOpId(e.target.value); setErrors([]); }}>
+            {def.operations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+          </select>
+        </label>
+        {needsKey && (
+          <label>
+            Key
+            <input
+              className="key-input"
+              value={keyText}
+              inputMode="numeric"
+              disabled={steps !== null}
+              aria-invalid={keyText.trim() !== '' && key === null}
+              onChange={(e) => setKeyText(e.target.value)}
+            />
+          </label>
+        )}
+        {steps === null ? (
+          <button type="button" className="primary" disabled={needsKey && key === null} onClick={run}>Run</button>
+        ) : (
+          <button type="button" onClick={() => setSteps(null)}>Back to the tree</button>
+        )}
+      </div>
+      {errors.map((m) => <p key={m} role="alert" className="feedback bad">{m}</p>)}
+      {steps === null ? (
+        <div className="layout">
+          <div className="main-col">
+            <TreeCanvas
+              view={{ tree, highlight: { nodes: selected ? [selected] : [], edges: [] }, tags: {} }}
+              onNodeClick={op.input === 'node' ? (id) => setKeyText(String(tree.nodes[id].key)) : undefined}
+            />
+            {op.input === 'node' && <p className="muted hint">Click a node or type its key.</p>}
+          </div>
+          <div className="side-col">
+            <PseudocodePanel procs={procs} />
+          </div>
+        </div>
+      ) : (
+        <Player
+          key={runId}
+          steps={steps}
+          procs={procs}
+          questionTypes={def.questionTypes}
+          settings={settings}
+          onSettingsChange={setSettings}
+          nodes={(s) => inorder(s.view.tree).map((id) => ({ id, label: String(s.view.tree.nodes[id].key) }))}
+          main={(s, pick) => <TreeCanvas view={s.view} onNodeClick={pick} />}
+          below={(s) => <DSPanel ds={s.ds} />}
+          side={(s) => <StatePanel columns={[]} vertices={[]} step={s} />}
+          end={<button type="button" className="primary keep-result" onClick={keep}>Done: keep result</button>}
+        />
+      )}
+    </div>
+  );
+}
