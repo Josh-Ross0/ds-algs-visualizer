@@ -65,3 +65,10 @@ test('adjacency panel is read-only without onMove', () => {
   render(<AdjacencyPanel graph={g} />);
   expect(screen.queryByRole('button')).toBeNull();
 });
+
+test('ds panel shows a stack from bottom to top', () => {
+  render(<DSPanel ds={[{ kind: 'stack', name: 'Call stack', items: ['DFS(G)', 'DFS_Visit(G, v1)'] }]} />);
+  expect(screen.getByText('(bottom → top)')).toBeInTheDocument();
+  const items = within(screen.getByLabelText('Call stack contents')).getAllByText(/\w+/).map((e) => e.textContent);
+  expect(items).toEqual(['DFS(G)', 'DFS_Visit(G, v1)']);
+});

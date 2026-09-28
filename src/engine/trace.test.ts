@@ -31,3 +31,13 @@ test('treeEdgesFromPi', () => {
   };
   expect(treeEdgesFromPi(g, { a: { pi: null }, b: { pi: 'a' }, c: {} })).toEqual(['a--b']);
 });
+
+test('choice answers compare by value and format as the value', () => {
+  const q: Question = {
+    type: 't', prompt: 'p', explain: 'e',
+    answer: { kind: 'choice', value: 'back', options: ['tree', 'back'] },
+  };
+  expect(checkAnswer(q, { kind: 'choice', value: 'back', options: ['tree', 'back'] })).toBe(true);
+  expect(checkAnswer(q, { kind: 'choice', value: 'tree', options: ['tree', 'back'] })).toBe(false);
+  expect(formatAnswer(q.answer)).toBe('back');
+});

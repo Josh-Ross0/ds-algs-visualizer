@@ -1,10 +1,11 @@
+import { useEffect, useRef } from 'react';
 import type { AlgorithmDef } from '../algorithms/types';
 import { vertexIds, type Graph } from '../engine/graph';
 import type { Step } from '../engine/trace';
 import { AdjacencyPanel } from './AdjacencyPanel';
 import { DSPanel } from './DSPanel';
 import { GraphCanvas } from './GraphCanvas';
-import { PlayerControls } from './PlayerControls';
+import { PlayerControls, type PlayerControlsHandle } from './PlayerControls';
 import { PseudocodePanel } from './PseudocodePanel';
 import { Feedback, QuestionOverlay } from './QuestionOverlay';
 import type { Settings } from './settings';
@@ -25,6 +26,17 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
   const step = steps[state.index];
   const pending = state.pending !== null ? steps[state.pending].question! : null;
   const vertices = vertexIds(graph);
+
+  // When a pending question closes (answer or skip), the dialog unmounts and
+  // focus would otherwise fall to <body>. Send it back to the player control.
+  const playerRef = useRef<PlayerControlsHandle>(null);
+  const wasPending = useRef(state.pending);
+  useEffect(() => {
+    if (wasPending.current !== null && state.pending === null) {
+      playerRef.current?.restoreFocus();
+    }
+    wasPending.current = state.pending;
+  }, [state.pending]);
 
   return (
     <div className="layout">
@@ -49,6 +61,7 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
         )}
         {state.feedback && <Feedback {...state.feedback} />}
         <PlayerControls
+          ref={playerRef}
           state={state}
           total={steps.length}
           dispatch={dispatch}

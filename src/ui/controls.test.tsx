@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
 import type { Question } from '../engine/trace';
 import { initialPlayerState } from './player';
-import { PlayerControls } from './PlayerControls';
+import { PlayerControls, type PlayerControlsHandle } from './PlayerControls';
 import { Feedback, QuestionOverlay } from './QuestionOverlay';
 import { DEFAULT_SETTINGS } from './settings';
 import { SettingsPanel } from './SettingsPanel';
@@ -23,6 +24,24 @@ test('player buttons dispatch actions and show position', async () => {
 test('player shows score once something was answered', () => {
   render(<PlayerControls state={{ ...initialPlayerState(), outcomes: { 3: 'correct', 5: 'wrong' } }} total={10} dispatch={() => {}} speedMs={600} onSpeed={() => {}} />);
   expect(screen.getByText('Score: 1 / 2')).toBeInTheDocument();
+});
+
+test('restoreFocus returns focus to the button last used to advance', async () => {
+  const ref = createRef<PlayerControlsHandle>();
+  render(<PlayerControls ref={ref} state={initialPlayerState()} total={10} dispatch={() => {}} speedMs={600} onSpeed={() => {}} />);
+  const bigNext = screen.getByRole('button', { name: 'Next big step' });
+  await userEvent.click(bigNext);
+  bigNext.blur();
+  expect(bigNext).not.toHaveFocus();
+  ref.current!.restoreFocus();
+  expect(bigNext).toHaveFocus();
+});
+
+test('restoreFocus falls back to Next step when no button was used yet', () => {
+  const ref = createRef<PlayerControlsHandle>();
+  render(<PlayerControls ref={ref} state={initialPlayerState()} total={10} dispatch={() => {}} speedMs={600} onSpeed={() => {}} />);
+  ref.current!.restoreFocus();
+  expect(screen.getByRole('button', { name: 'Next step' })).toHaveFocus();
 });
 
 const vq: Question = { type: 'bfs.dequeue', prompt: 'Which?', explain: 'Because.', answer: { kind: 'vertex', value: 'b' } };
@@ -86,4 +105,18 @@ test('settings toggles predict mode and question types', async () => {
   expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_SETTINGS, predict: false });
   await userEvent.click(screen.getByLabelText('Dequeue'));
   expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_SETTINGS, disabledTypes: ['bfs.dequeue'] });
+});
+
+const cq: Question = {
+  type: 'dfs.edgeType', prompt: 'Type?', explain: 'Gray.',
+  answer: { kind: 'choice', value: 'back', options: ['tree', 'back', 'forward', 'crossing'] },
+};
+
+test('choice question offers one button per option and focuses the first', async () => {
+  const onAnswer = vi.fn();
+  render(<QuestionOverlay question={cq} vertices={['a']} onAnswer={onAnswer} onSkip={() => {}} />);
+  expect(screen.getByRole('button', { name: 'tree' })).toHaveFocus();
+  expect(screen.queryByRole('button', { name: 'a' })).toBeNull();
+  await userEvent.click(screen.getByRole('button', { name: 'crossing' }));
+  expect(onAnswer).toHaveBeenCalledWith({ kind: 'choice', value: 'crossing', options: ['tree', 'back', 'forward', 'crossing'] });
 });
