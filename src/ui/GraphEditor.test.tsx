@@ -78,3 +78,56 @@ test('adding an 11th vertex shows the cap message', async () => {
   expect(screen.getByRole('alert')).toHaveTextContent('Graphs are limited to 10 vertices so they stay readable.');
   expect(onChange).not.toHaveBeenCalled();
 });
+
+const weightedStart: Graph = { ...start, directed: true, edges: [{ u: 'a', v: 'b', w: 2 }] };
+
+function WeightedHarness() {
+  const [g, setG] = useState(weightedStart);
+  latest = g;
+  return <GraphEditor graph={g} weighted onChange={setG} />;
+}
+
+test('new edges in a weighted graph get weight 1', async () => {
+  const { container } = render(<WeightedHarness />);
+  await userEvent.click(screen.getByRole('button', { name: 'Add edge' }));
+  fireEvent.pointerDown(vertex(container, 'b'));
+  fireEvent.pointerDown(vertex(container, 'c'));
+  expect(latest.edges).toEqual([{ u: 'a', v: 'b', w: 2 }, { u: 'b', v: 'c', w: 1 }]);
+});
+
+test('a selected edge has an editable weight; Backspace in the field does not delete the edge', async () => {
+  const { container } = render(<WeightedHarness />);
+  fireEvent.click(container.querySelector('[data-edge="a->b"]')!);
+  const field = screen.getByLabelText('Weight w(a, b)');
+  expect(field).toHaveValue('2');
+  fireEvent.keyDown(field, { key: 'Backspace' });
+  expect(latest.edges).toHaveLength(1);
+  await userEvent.clear(field);
+  await userEvent.type(field, '-3');
+  expect(latest.edges).toEqual([{ u: 'a', v: 'b', w: -3 }]);
+});
+
+test('weight field ignores text that is not a number', async () => {
+  const { container } = render(<WeightedHarness />);
+  fireEvent.click(container.querySelector('[data-edge="a->b"]')!);
+  const field = screen.getByLabelText('Weight w(a, b)');
+  await userEvent.clear(field);
+  await userEvent.type(field, 'x');
+  expect(field).toHaveAttribute('aria-invalid', 'true');
+  expect(latest.edges).toEqual([{ u: 'a', v: 'b', w: 2 }]);
+});
+
+test('weight field ignores decimals: course examples use integer weights only', async () => {
+  const { container } = render(<WeightedHarness />);
+  fireEvent.click(container.querySelector('[data-edge="a->b"]')!);
+  const field = screen.getByLabelText('Weight w(a, b)');
+  fireEvent.change(field, { target: { value: '1.5' } });
+  expect(field).toHaveAttribute('aria-invalid', 'true');
+  expect(latest.edges).toEqual([{ u: 'a', v: 'b', w: 2 }]);
+});
+
+test('unweighted editor shows no weight field', () => {
+  const { container } = render(<Harness />);
+  fireEvent.click(container.querySelector('[data-edge="a--b"]')!);
+  expect(screen.queryByLabelText(/^Weight/)).toBeNull();
+});

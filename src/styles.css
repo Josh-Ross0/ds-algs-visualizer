@@ -162,6 +162,20 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .edge.active .edge-line { stroke: var(--marker); stroke-width: 4; stroke-dasharray: 7 5; }
 .edge.selected .edge-line { stroke: var(--red); stroke-width: 4; }
 .arrow-head { fill: var(--edge); }
+.arrow-head.tree { fill: var(--tree); }
+.arrow-head.active { fill: var(--marker); }
+.arrow-head.selected { fill: var(--red); }
+.edge-weight {
+  font-family: var(--font-code);
+  font-size: 14px;
+  font-weight: 700;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
 .vertex { cursor: pointer; }
 .vertex circle { stroke: var(--v-stroke); stroke-width: 2; fill: var(--v-none); transition: fill 0.25s ease, stroke 0.25s ease; }
 .vertex text { font-family: var(--font-text); font-size: 15px; font-weight: 700; fill: var(--ink); pointer-events: none; }
@@ -173,6 +187,12 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .vertex.v-gray text { fill: #000000; }
 .vertex.v-black circle { fill: var(--v-black); stroke: var(--v-black-stroke); }
 .vertex.v-black text { fill: #ffffff; }
+/* Has values (d, π) but no color attribute: Bellman-Ford and Dijkstra vertices. */
+.vertex.v-plain circle { fill: var(--v-white); }
+.vertex.v-plain text { fill: #000000; }
+/* Extracted from Dijkstra's Q: done, drawn like a black vertex. */
+.vertex.settled circle { fill: var(--v-black); stroke: var(--v-black-stroke); stroke-dasharray: none; }
+.vertex.settled text { fill: #ffffff; }
 .vertex.active circle { stroke: var(--marker); stroke-width: 5; stroke-dasharray: none; }
 .vertex.selected circle, .vertex.edge-from circle { stroke: var(--red); stroke-width: 5; stroke-dasharray: none; }
 
@@ -220,6 +240,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .stack .queue-items .chip:first-child { border-left: 5px solid var(--ink); }
 /* The stack reads bottom to top: chips must never wrap onto a new row. */
 .stack .queue-items { flex-wrap: nowrap; overflow-x: auto; }
+.queue-items .chip.current { background: var(--marker-tint); border-color: var(--marker); box-shadow: inset 0 -3px 0 var(--marker); }
 
 .chip {
   display: inline-flex;
@@ -237,6 +258,10 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .adjacency ul { list-style: none; margin: 0 0 10px; padding: 0; }
 .adjacency li { padding: 2px 0; }
 .adj-head { margin-right: 6px; font-weight: 700; }
+.edge-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.weight-field { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; font-family: var(--font-code); }
+.weight-field input { width: 7em; }
+.weight-field input[aria-invalid='true'] { border-color: var(--red); }
 
 /* ---------- Player ---------- */
 .player { display: flex; flex-direction: column; gap: 10px; }

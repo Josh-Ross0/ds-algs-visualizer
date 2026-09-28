@@ -130,3 +130,9 @@ test('choice question offers one button per option and focuses the first', async
   await userEvent.click(screen.getByRole('button', { name: 'crossing' }));
   expect(onAnswer).toHaveBeenCalledWith({ kind: 'choice', value: 'crossing', options: ['tree', 'back', 'forward', 'crossing'] });
 });
+
+test('yes/no question focuses Yes on mount', () => {
+  const yq: Question = { type: 't', prompt: 'Update?', explain: 'e', answer: { kind: 'yesno', value: true } };
+  render(<QuestionOverlay question={yq} vertices={[]} onAnswer={() => {}} onSkip={() => {}} />);
+  expect(screen.getByRole('button', { name: 'Yes' })).toHaveFocus();
+});

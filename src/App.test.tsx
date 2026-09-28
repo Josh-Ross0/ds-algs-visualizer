@@ -94,3 +94,63 @@ test('DFS page: first question, final times, no edge types on screen', async () 
   expect(screen.getByLabelText('Call stack contents')).toHaveTextContent('DFS(G)');
   expect(document.body).not.toHaveTextContent(/\b(forward|crossing)\b/);
 });
+
+test('home lists Bellman-Ford and Dijkstra', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /Bellman-Ford/ })).toHaveAttribute('href', '#/bellman-ford');
+  expect(screen.getByRole('link', { name: /Dijkstra/ })).toHaveAttribute('href', '#/dijkstra');
+});
+
+test('Bellman-Ford page: first Relax question, final distances', async () => {
+  window.location.hash = '#/bellman-ford';
+  render(<App />);
+  expect(screen.getByRole('heading', { name: 'Bellman-Ford' })).toBeInTheDocument();
+  expect(screen.getByLabelText('G.E')).toHaveTextContent(/\(s, v2\)/);
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  const dialog = screen.getByRole('dialog', { name: 'Predict the next step' });
+  expect(dialog).toHaveTextContent('Relax line 1: is v2.d > s.d + w(s, v2)?');
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Yes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+  await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+  await userEvent.click(screen.getByLabelText('Predict mode'));
+  await userEvent.click(screen.getByRole('button', { name: 'End' }));
+  const rowV1 = screen.getByRole('row', { name: /^v1/ });
+  expect(rowV1).toHaveTextContent('-4');
+  expect(rowV1).toHaveTextContent('v4');
+  expect(screen.getByLabelText('G.E contents')).toHaveTextContent('(v7, v3)');
+});
+
+test('Dijkstra page: Extract_Min question, final distances, settled vertices', async () => {
+  window.location.hash = '#/dijkstra';
+  const { container } = render(<App />);
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  const dialog = screen.getByRole('dialog', { name: 'Predict the next step' });
+  expect(dialog).toHaveTextContent('Line 4: which vertex does Extract_Min(Q) return?');
+  await userEvent.click(within(dialog).getByRole('button', { name: 's' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+  await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+  await userEvent.click(screen.getByLabelText('Predict mode'));
+  await userEvent.click(screen.getByRole('button', { name: 'End' }));
+  const rowV7 = screen.getByRole('row', { name: /^v7/ });
+  expect(rowV7).toHaveTextContent('14');
+  expect(rowV7).toHaveTextContent('v6');
+  expect(screen.getByLabelText('Q contents')).toHaveTextContent('∅');
+  expect(container.querySelectorAll('.vertex.settled')).toHaveLength(8);
+});
+
+test('Dijkstra negative-weight preset: warning on Run, cleared by Edit graph', async () => {
+  window.location.hash = '#/dijkstra';
+  render(<App />);
+  await userEvent.selectOptions(screen.getByLabelText('Preset'), '1');
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+  expect(screen.getByText(/Dijkstra assumes w ≥ 0/)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Next step' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Edit graph' }));
+  expect(screen.queryByText(/Dijkstra assumes w ≥ 0/)).toBeNull();
+});

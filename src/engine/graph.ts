@@ -1,5 +1,8 @@
 export const MAX_VERTICES = 10;
 
+// Weight of an edge that has none (new edges in a weighted editor start here too).
+export const DEFAULT_WEIGHT = 1;
+
 export type Vertex = { id: string; x: number; y: number };
 export type Edge = { u: string; v: string; w?: number };
 export type Graph = {
@@ -7,6 +10,8 @@ export type Graph = {
   vertices: Vertex[];
   edges: Edge[];
   adjOrder: Record<string, string[]>;
+  // Displayed order of G.E as edge keys (Bellman-Ford scans edges in this order).
+  edgeOrder?: string[];
 };
 
 export function compareLabels(a: string, b: string): number {
@@ -25,6 +30,22 @@ export function edgeKey(g: Graph, u: string, v: string): string {
 export function hasEdge(g: Graph, u: string, v: string): boolean {
   const key = edgeKey(g, u, v);
   return g.edges.some((e) => edgeKey(g, e.u, e.v) === key);
+}
+
+function findEdge(g: Graph, u: string, v: string): Edge | undefined {
+  const key = edgeKey(g, u, v);
+  return g.edges.find((e) => edgeKey(g, e.u, e.v) === key);
+}
+
+export function weightOf(g: Graph, u: string, v: string): number {
+  const e = findEdge(g, u, v);
+  if (!e) throw new Error(`No edge ${edgeKey(g, u, v)}`);
+  return e.w ?? DEFAULT_WEIGHT;
+}
+
+export function setWeight(g: Graph, u: string, v: string, w: number): Graph {
+  const key = edgeKey(g, u, v);
+  return { ...g, edges: g.edges.map((e) => (edgeKey(g, e.u, e.v) === key ? { ...e, w } : e)) };
 }
 
 function neighborsByLabel(g: Graph, u: string): string[] {
@@ -74,11 +95,14 @@ export function removeVertex(g: Graph, id: string): Graph {
   for (const [u, list] of Object.entries(g.adjOrder)) {
     if (u !== id) adjOrder[u] = list.filter((x) => x !== id);
   }
+  const edges = g.edges.filter((e) => e.u !== id && e.v !== id);
+  const kept = new Set(edges.map((e) => edgeKey(g, e.u, e.v)));
   return {
     ...g,
     vertices: g.vertices.filter((v) => v.id !== id),
-    edges: g.edges.filter((e) => e.u !== id && e.v !== id),
+    edges,
     adjOrder,
+    edgeOrder: g.edgeOrder?.filter((k) => kept.has(k)),
   };
 }
 
@@ -90,7 +114,11 @@ export function addEdge(g: Graph, u: string, v: string, w?: number): Graph {
 
 export function removeEdge(g: Graph, u: string, v: string): Graph {
   const key = edgeKey(g, u, v);
-  return { ...g, edges: g.edges.filter((e) => edgeKey(g, e.u, e.v) !== key) };
+  return {
+    ...g,
+    edges: g.edges.filter((e) => edgeKey(g, e.u, e.v) !== key),
+    edgeOrder: g.edgeOrder?.filter((k) => k !== key),
+  };
 }
 
 export function moveVertex(g: Graph, id: string, x: number, y: number): Graph {
@@ -115,4 +143,33 @@ export function moveInAdjacency(g: Graph, u: string, index: number, delta: numbe
 
 export function resetAdjacency(g: Graph): Graph {
   return { ...g, adjOrder: {} };
+}
+
+function endpointsByLabel(g: Graph, e: Edge): [string, string] {
+  if (g.directed || compareLabels(e.u, e.v) <= 0) return [e.u, e.v];
+  return [e.v, e.u];
+}
+
+// G.E in displayed order: the custom order first, then any other edges by label.
+export function edgeList(g: Graph): Edge[] {
+  const byKey = new Map(g.edges.map((e) => [edgeKey(g, e.u, e.v), e]));
+  const custom = (g.edgeOrder ?? []).flatMap((k) => byKey.get(k) ?? []);
+  const natural = [...g.edges].sort((a, b) => {
+    const [a1, a2] = endpointsByLabel(g, a);
+    const [b1, b2] = endpointsByLabel(g, b);
+    return compareLabels(a1, b1) || compareLabels(a2, b2);
+  });
+  return [...custom, ...natural.filter((e) => !custom.includes(e))];
+}
+
+export function moveInEdgeList(g: Graph, index: number, delta: number): Graph {
+  const list = edgeList(g).map((e) => edgeKey(g, e.u, e.v));
+  const target = index + delta;
+  if (target < 0 || target >= list.length) return g;
+  [list[index], list[target]] = [list[target], list[index]];
+  return { ...g, edgeOrder: list };
+}
+
+export function resetEdgeOrder(g: Graph): Graph {
+  return { ...g, edgeOrder: undefined };
 }

@@ -1,0 +1,39 @@
+import { formatValue, type Question } from '../../engine/trace';
+
+// "u.d + w", with a negative weight in parentheses: "2 + (-1)".
+function sumOperands(ud: number, w: number): string {
+  return `${formatValue(ud)} + ${w < 0 ? `(${w})` : w}`;
+}
+
+// sumOperands with "= result" appended: "2 + (-1) = 1".
+export function sumText(ud: number, w: number): string {
+  return `${sumOperands(ud, w)} = ${formatValue(ud + w)}`;
+}
+
+export function relaxNote(u: string, v: string, ud: number, w: number, vd: number): string {
+  const updates = vd > ud + w;
+  // When line 1 finds an update, line 2's note reveals the sum; don't give it away here.
+  const sum = updates ? sumOperands(ud, w) : sumText(ud, w);
+  return `${v}.d = ${formatValue(vd)} ${updates ? '>' : '≤'} ${u}.d + w(${u}, ${v}) = ${sum}.`;
+}
+
+export function relaxUpdateQuestion(type: string, u: string, v: string, ud: number, w: number, vd: number): Question {
+  const yes = vd > ud + w;
+  return {
+    type,
+    prompt: `Relax line 1: is ${v}.d > ${u}.d + w(${u}, ${v})?`,
+    answer: { kind: 'yesno', value: yes },
+    explain: `${v}.d = ${formatValue(vd)} and ${u}.d + w(${u}, ${v}) = ${sumText(ud, w)}, so ${
+      yes ? `${v}.d and ${v}.π are updated` : 'nothing changes'
+    }.`,
+  };
+}
+
+export function newDistanceQuestion(type: string, u: string, v: string, ud: number, w: number): Question {
+  return {
+    type,
+    prompt: `Relax line 2: what value is assigned to ${v}.d?`,
+    answer: { kind: 'number', value: ud + w },
+    explain: `${v}.d = ${u}.d + w(${u}, ${v}) = ${sumText(ud, w)}.`,
+  };
+}

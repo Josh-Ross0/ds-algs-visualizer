@@ -31,8 +31,40 @@ test('vertex pointer down reports the id', () => {
   expect(onDown).toHaveBeenCalledWith('b');
 });
 
-test('directed edges get an arrow marker', () => {
-  const { container } = render(<GraphCanvas graph={{ ...graph, directed: true }} />);
-  const line = container.querySelector('[data-edge="a->b"] line.edge-line')!;
-  expect(line.getAttribute('marker-end')).toBe('url(#arrow)');
+const markerOf = (container: HTMLElement, key: string) => {
+  const ref = container.querySelector(`[data-edge="${key}"] line.edge-line`)!.getAttribute('marker-end')!;
+  expect(ref).toMatch(/^url\(#.+\)$/);
+  return container.querySelector(`marker[id="${ref.slice(5, -1)}"] path`)!;
+};
+
+test('directed edges get an arrowhead that matches the edge class', () => {
+  const directed = { ...graph, directed: true, edges: [{ u: 'a', v: 'b' }, { u: 'b', v: 'a' }] };
+  const { container } = render(
+    <GraphCanvas graph={directed} step={{ ...step, highlight: { treeEdges: ['a->b'] } }} />,
+  );
+  expect(markerOf(container, 'a->b')).toHaveClass('arrow-head', 'tree');
+  expect(markerOf(container, 'b->a')).toHaveClass('arrow-head', 'plain');
+});
+
+test('undirected edges have no arrowhead', () => {
+  const { container } = render(<GraphCanvas graph={graph} />);
+  expect(container.querySelector('[data-edge="a--b"] line.edge-line')!.getAttribute('marker-end')).toBeNull();
+});
+
+test('weights are drawn only on weighted canvases, defaulting to 1', () => {
+  const g = { ...graph, edges: [{ u: 'a', v: 'b', w: -2 }] };
+  const { container, rerender } = render(<GraphCanvas graph={g} weighted />);
+  expect(container.querySelector('[data-edge="a--b"] .edge-weight')).toHaveTextContent('-2');
+  rerender(<GraphCanvas graph={graph} weighted />);
+  expect(container.querySelector('[data-edge="a--b"] .edge-weight')).toHaveTextContent('1');
+  rerender(<GraphCanvas graph={g} />);
+  expect(container.querySelector('.edge-weight')).toBeNull();
+});
+
+test('a vertex with state but no color is plain; settled vertices are marked', () => {
+  const s: Step = { ...step, vertexState: { a: { d: 0 }, b: {} }, highlight: { settled: ['a'] } };
+  const { container } = render(<GraphCanvas graph={graph} step={s} />);
+  expect(container.querySelector('[data-vertex="a"]')).toHaveClass('v-plain', 'settled');
+  expect(container.querySelector('[data-vertex="b"]')).toHaveClass('v-none');
+  expect(container.querySelector('[data-vertex="b"]')).not.toHaveClass('settled');
 });
