@@ -43,7 +43,7 @@ BFS, DFS, Bellman-Ford, Dijkstra, Prim, Kruskal.
 
 Topological sort and SCC were dropped from v1 on 2026-09-28 (staff decision).
 
-Pseudocode is taken verbatim from `Lectures/bfs.pdf`, `dfs.pdf`, `shortest-paths.pdf`, `mst.pdf`, including helper procedures (`BFS_Initialization`, `DFS_Visit`, `Initialize Single Source`, `Relax`), spelled exactly as on the rendered slides (pdftotext drops underscores).
+Pseudocode is taken verbatim from `Lectures/bfs.pdf`, `dfs.pdf`, `shortest-paths.pdf`, `mst.pdf`, including helper procedures (`BFS_Initialization`, `DFS_Visit`, `Initialize_Single_Source`, `Relax`, `Extract_Min`), spelled exactly as on the rendered slides (pdftotext drops underscores).
 
 ## 4. Conventions
 
@@ -141,7 +141,7 @@ type Question = {
 |---|---|---|---|---|---|
 | BFS | color, d, π | FIFO queue | colors, π-tree | s | next dequeued vertex; new `v.d` |
 | DFS | color, d, f, π; `time` | recursion stack | colors, π-tree | — | next visited vertex; `u.f`; edge type (non-tree edges only) |
-| Bellman-Ford | d, π; `i` | edge list, current edge | relaxed edge; negative-cycle edge | s, edge order | does Relax update; new `v.d` |
+| Bellman-Ford | d, π; `i` | edge list, current edge | relaxed edge; negative-cycle edge | s, edge order | does Relax update (first pass, i = 1, only); new `v.d` (every update) |
 | Dijkstra | d, π, in Q | Q by d | extracted set, π-tree | s | Extract Min result; does Relax update |
 | Prim | key, π, in Q | Q by key | tree edges | r | Extract Min result; new `v.key` |
 | Kruskal | — | sorted array A, index i | T; rejected edge's cycle | — | accept or reject edge |
@@ -152,13 +152,15 @@ Edge types (tree/back/forward/crossing) are shown only inside predict questions 
 
 The edge-type question itself is asked only for non-tree edges: a tree edge is the "normal" case the student already predicts via the discover question, so asking again is redundant. The answer options are unchanged (directed: tree/back/forward/crossing; undirected: tree/back), so "tree" remains a plausible wrong answer (staff decision, 2026-09-28).
 
+Bellman-Ford asks "does Relax update" only in the first pass: across all |V| − 1 passes the lecture graph makes 91 Relax calls, only 13 of which change anything (staff decision, 2026-09-28).
+
 ## 7. Error handling and validation
 
 | Situation | Behavior |
 |---|---|
 | Dijkstra with a negative weight | Warn ("Dijkstra assumes w ≥ 0"), allow run so students see the failure |
 | Prim/Kruskal on disconnected graph | Block run with message |
-| Bellman-Ford with reachable negative cycle | Run; highlight line 7 and the violating edge |
+| Bellman-Ford with reachable negative cycle | Run; the trace stops at line 7 on the first edge that fails the check, with that edge highlighted |
 | No source/root selected | Prompt to click a vertex |
 | 11th vertex | Refuse with message about the cap |
 
