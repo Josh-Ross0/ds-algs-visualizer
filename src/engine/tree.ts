@@ -108,7 +108,7 @@ export function bstLayout(t: Tree, nil?: NilSlot): { pos: Record<NodeId, Pos>; n
   };
   setDepth(t.root, 0);
   order.forEach((id, i) => { pos[id] = { x: TREE_PAD + i * TREE_SPACING, y: TREE_PAD + depth[id] * TREE_LEVEL }; });
-  const detached = Object.keys(t.nodes).filter((id) => !(id in pos)).sort();
+  const detached = Object.keys(t.nodes).filter((id) => !(id in pos)).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
   detached.forEach((id, i) => { pos[id] = { x: TREE_PAD + (order.length + i) * TREE_SPACING, y: TREE_PAD }; });
   const nilPos = nil && pos[nil.parent]
     ? { x: pos[nil.parent].x + (nil.side === 'left' ? -1 : 1) * (TREE_SPACING / 2), y: pos[nil.parent].y + TREE_LEVEL }

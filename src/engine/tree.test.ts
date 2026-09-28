@@ -102,3 +102,15 @@ test('bstLayout of an empty tree still has a drawable size', () => {
   expect(L.width).toBeGreaterThan(0);
   expect(L.height).toBeGreaterThan(0);
 });
+
+test('bstLayout detached nodes sort numerically (n2 left of n10)', () => {
+  const t = emptyTree();
+  const root = newNode(t, 50);
+  t.root = root;
+  // Create detached nodes: n2 should come before n10 numerically
+  for (let i = 0; i < 9; i++) newNode(t, 100 + i);
+  const n2 = 'n2';
+  const n10 = 'n10';
+  const L = bstLayout(t);
+  expect(L.pos[n2].x).toBeLessThan(L.pos[n10].x);
+});
