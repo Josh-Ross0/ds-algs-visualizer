@@ -31,6 +31,8 @@ test('Relax: one step when nothing changes, three when it updates; questions onl
   const relaxSteps = t.steps.slice(mid);
   expect(relaxSteps.map((s) => s.line)).toEqual([1, 2, 3]);
   expect(relaxSteps[0].question).toBeUndefined();
+  expect(relaxSteps[0].note).toBe('a.d = ∞ > s.d + w(s, a) = 0 + 2.');
+  expect(relaxSteps[1].note).toBe('a.d = s.d + w(s, a) = 0 + 2 = 2.');
   expect(relaxSteps[1].question?.answer).toEqual({ kind: 'number', value: 2 });
   expect(relaxSteps[1].vertexState.a).toEqual({ d: 2, pi: null });
   expect(relaxSteps[2].vertexState.a).toEqual({ d: 2, pi: 's' });
@@ -53,7 +55,7 @@ test('ds and settled callbacks are read at every emit', () => {
 
 test('notes and explanations spell out the comparison, with ∞ and negative weights', () => {
   expect(relaxNote('a', 'b', Infinity, -1, Infinity)).toBe('b.d = ∞ ≤ a.d + w(a, b) = ∞ + (-1) = ∞.');
-  expect(relaxNote('s', 'a', 0, 2, Infinity)).toBe('a.d = ∞ > s.d + w(s, a) = 0 + 2 = 2.');
+  expect(relaxNote('s', 'a', 0, 2, Infinity)).toBe('a.d = ∞ > s.d + w(s, a) = 0 + 2.');
   expect(relaxUpdateQuestion('t', 's', 'a', 0, 2, Infinity)).toEqual({
     type: 't',
     prompt: 'Relax line 1: is a.d > s.d + w(s, a)?',

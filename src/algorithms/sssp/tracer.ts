@@ -2,7 +2,7 @@ import { edgeKey, vertexIds, weightOf, type Graph } from '../../engine/graph';
 import {
   treeEdgesFromPi, type DSView, type Question, type Step, type Value, type VertexState,
 } from '../../engine/trace';
-import { newDistanceQuestion, relaxNote, relaxUpdateQuestion } from './questions';
+import { newDistanceQuestion, relaxNote, relaxUpdateQuestion, sumText } from './questions';
 import { INIT, RELAX } from './shared';
 
 export type EmitOptions = {
@@ -77,7 +77,11 @@ export function createTracer(
       });
       if (!(vd > ud + w)) return;
       st[v].d = ud + w;
-      t.emit(RELAX, 2, { ...hl, question: ask.value ? newDistanceQuestion(ask.value, u, v, ud, w) : undefined });
+      t.emit(RELAX, 2, {
+        ...hl,
+        note: `${v}.d = ${u}.d + w(${u}, ${v}) = ${sumText(ud, w)}.`,
+        question: ask.value ? newDistanceQuestion(ask.value, u, v, ud, w) : undefined,
+      });
       st[v].pi = u;
       t.emit(RELAX, 3, hl);
     },

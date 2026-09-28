@@ -28,6 +28,8 @@ function checkPredictable(g: Graph, steps: Step[]): void {
       expect([prev.proc, prev.line]).toEqual(['Relax', 1]);
       expect(q.answer.value).toBe(ud + w);
       expect(vd).not.toBe(ud + w);
+      // Regression: the Relax line-1 note (shown over this question) must not reveal the answer.
+      expect(prev.note ?? '').not.toMatch(new RegExp(`= ${String(ud + w).replace('-', '\\-')}\\.$`));
     } else {
       throw new Error(`unexpected question ${q.type}`);
     }
