@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import type { Question, Step } from '../engine/trace';
-import { createPlayerReducer, initialPlayerState } from './player';
+import type { Question, StepCore } from '../engine/trace';
+import { createPlayerReducer, initialPlayerState } from './playerReducer';
 import { isAsked, type Settings } from './settings';
 
-export function usePlayer(steps: Step[], settings: Settings) {
+export function usePlayer<S extends StepCore>(steps: S[], settings: Settings) {
   const asked = useCallback((q: Question) => isAsked(settings, q), [settings]);
   const reducer = useMemo(() => createPlayerReducer(steps, asked), [steps, asked]);
   const [state, dispatch] = useReducer(reducer, undefined, initialPlayerState);

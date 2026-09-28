@@ -203,3 +203,16 @@ test('Kruskal page: cycle-free question, final T, no state table', async () => {
   expect(screen.getByLabelText('T contents')).toHaveTextContent('(d, r)');
   expect(screen.getByText('T has 8 edges with total weight 29.')).toBeInTheDocument();
 });
+
+test('home lists the BST under tree structures', () => {
+  render(<App />);
+  expect(screen.getByRole('heading', { name: 'Tree structures' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Binary Search Tree/ })).toHaveAttribute('href', '#/bst');
+});
+
+test('#/bst opens the BST page with the lecture tree', () => {
+  window.location.hash = '#/bst';
+  const { container } = render(<App />);
+  expect(screen.getByRole('heading', { name: 'Binary Search Tree (BST)' })).toBeInTheDocument();
+  expect(container.querySelectorAll('.tnode')).toHaveLength(12);
+});

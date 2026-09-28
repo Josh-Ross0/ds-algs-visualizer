@@ -1,5 +1,5 @@
 import type { Question, Step } from '../engine/trace';
-import { createPlayerReducer, initialPlayerState, score, type PlayerAction, type PlayerState } from './player';
+import { createPlayerReducer, initialPlayerState, score, type PlayerAction, type PlayerState } from './playerReducer';
 
 const q: Question = { type: 't', prompt: 'p', explain: 'e', answer: { kind: 'vertex', value: 'a' } };
 const mk = (bigStep = false, question?: Question): Step => ({
