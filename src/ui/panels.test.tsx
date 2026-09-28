@@ -72,3 +72,19 @@ test('ds panel shows a stack from bottom to top', () => {
   const items = within(screen.getByLabelText('Call stack contents')).getAllByText(/\w+/).map((e) => e.textContent);
   expect(items).toEqual(['DFS(G)', 'DFS_Visit(G, v1)']);
 });
+
+test('ds panel shows the edge list and marks the current edge', () => {
+  render(<DSPanel ds={[{ kind: 'edges', name: 'G.E', items: ['(s, a)', '(a, b)'], current: 1 }]} />);
+  expect(screen.getByText('(scan order)')).toBeInTheDocument();
+  const current = within(screen.getByLabelText('G.E contents')).getByText('(a, b)');
+  expect(current).toHaveClass('current');
+  expect(current).toHaveAttribute('aria-current', 'true');
+  expect(within(screen.getByLabelText('G.E contents')).getByText('(s, a)')).not.toHaveClass('current');
+});
+
+test('ds panel lists a keyed set with each key', () => {
+  render(<DSPanel ds={[{ kind: 'keyed', name: 'Q', key: 'd', items: [{ id: 'a', value: 3 }, { id: 'b', value: Infinity }] }]} />);
+  expect(screen.getByText('(by d)')).toBeInTheDocument();
+  const items = within(screen.getByLabelText('Q contents')).getAllByText(/\w/).map((e) => e.textContent);
+  expect(items).toEqual(['a.d = 3', 'b.d = ∞']);
+});

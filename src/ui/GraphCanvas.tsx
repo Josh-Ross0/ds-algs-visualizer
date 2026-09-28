@@ -1,17 +1,20 @@
-import { useRef, type PointerEvent } from 'react';
-import { edgeKey, hasEdge, type Graph } from '../engine/graph';
-import type { Step } from '../engine/trace';
+import { useId, useRef, type PointerEvent } from 'react';
+import { DEFAULT_WEIGHT, edgeKey, hasEdge, type Graph } from '../engine/graph';
+import { formatValue, type Step } from '../engine/trace';
 
 export const VIEW_W = 600;
 export const VIEW_H = 420;
 export const RADIUS = 20;
 export type Point = { x: number; y: number };
 
+const MARKER_KINDS = ['plain', 'tree', 'active', 'selected'] as const;
+
 type Props = {
   graph: Graph;
   step?: Step;
   selected?: string | null;
   edgeFrom?: string | null;
+  weighted?: boolean;
   onBackgroundPointerDown?(p: Point): void;
   onVertexPointerDown?(id: string): void;
   onEdgeClick?(key: string): void;
@@ -35,6 +38,8 @@ export function GraphCanvas(props: Props) {
   const pos = new Map(graph.vertices.map((v) => [v.id, v]));
   const hl = step?.highlight ?? {};
   const point = (e: PointerEvent) => toSvgPoint(svgRef.current!, e);
+  // One set of arrowheads per canvas; strip useId's punctuation so url(#…) stays simple.
+  const markerBase = `arrow${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
   return (
     <svg
@@ -48,9 +53,20 @@ export function GraphCanvas(props: Props) {
       onPointerLeave={props.onPointerUp}
     >
       <defs>
-        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" className="arrow-head" />
-        </marker>
+        {MARKER_KINDS.map((k) => (
+          <marker
+            key={k}
+            id={`${markerBase}-${k}`}
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" className={`arrow-head ${k}`} />
+          </marker>
+        ))}
       </defs>
       <rect
         className="canvas-bg"
@@ -75,6 +91,8 @@ export function GraphCanvas(props: Props) {
         if (hl.treeEdges?.includes(key)) cls.push('tree');
         if (hl.edges?.includes(key)) cls.push('active');
         if (selected === key) cls.push('selected');
+        const markerKind =
+          selected === key ? 'selected' : hl.edges?.includes(key) ? 'active' : hl.treeEdges?.includes(key) ? 'tree' : 'plain';
         const x1 = a.x + ox;
         const y1 = a.y + oy;
         const x2 = b.x - ux * end + ox;
@@ -88,14 +106,28 @@ export function GraphCanvas(props: Props) {
               y1={y1}
               x2={x2}
               y2={y2}
-              markerEnd={graph.directed ? 'url(#arrow)' : undefined}
+              markerEnd={graph.directed ? `url(#${markerBase}-${markerKind})` : undefined}
             />
+            {props.weighted && (
+              <text
+                className="edge-weight"
+                x={(x1 + x2) / 2 - uy * 12}
+                y={(y1 + y2) / 2 + ux * 12}
+                textAnchor="middle"
+                dominantBaseline="central"
+              >
+                {formatValue(e.w ?? DEFAULT_WEIGHT)}
+              </text>
+            )}
           </g>
         );
       })}
       {graph.vertices.map((v) => {
-        const color = step?.vertexState[v.id]?.color;
-        const cls = ['vertex', `v-${typeof color === 'string' ? color : 'none'}`];
+        const attrs = step?.vertexState[v.id];
+        const color = attrs?.color;
+        const look = typeof color === 'string' ? `v-${color}` : attrs && Object.keys(attrs).length > 0 ? 'v-plain' : 'v-none';
+        const cls = ['vertex', look];
+        if (hl.settled?.includes(v.id)) cls.push('settled');
         if (hl.vertices?.includes(v.id)) cls.push('active');
         if (selected === v.id) cls.push('selected');
         if (edgeFrom === v.id) cls.push('edge-from');

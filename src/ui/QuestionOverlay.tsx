@@ -57,7 +57,7 @@ export function QuestionOverlay({ question, vertices, onAnswer, onSkip }: Props)
       )}
       {kind === 'yesno' && (
         <div className="choices">
-          <button type="button" onClick={() => onAnswer({ kind: 'yesno', value: true })}>Yes</button>
+          <button ref={setFirstControl} type="button" onClick={() => onAnswer({ kind: 'yesno', value: true })}>Yes</button>
           <button type="button" onClick={() => onAnswer({ kind: 'yesno', value: false })}>No</button>
         </div>
       )}
