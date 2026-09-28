@@ -1,13 +1,9 @@
-import { adjacency, compareLabels, edgeKey, vertexIds, type Graph } from '../../engine/graph';
-import type { Step, VertexState } from '../../engine/trace';
+import { adjacency, edgeKey, vertexIds, type Graph } from '../../engine/graph';
+import type { Step } from '../../engine/trace';
+import { extractMin, extractMinQuestion, keyedQ } from '../extractMin';
 import { createTracer } from '../sssp/tracer';
 import type { Params } from '../types';
 import { DIJKSTRA } from './pseudocode';
-import { extractQuestion } from './questions';
-
-// Q in Extract_Min order: by d, ties by label (∞ − ∞ is NaN, which falls through to the label).
-const byD = (st: VertexState) => (a: string, b: string) =>
-  (st[a].d as number) - (st[b].d as number) || compareLabels(a, b);
 
 export function runDijkstra(g: Graph, params: Params): Step[] {
   const s = params.s;
@@ -15,7 +11,7 @@ export function runDijkstra(g: Graph, params: Params): Step[] {
   const t = createTracer(
     g,
     s,
-    (st) => [{ kind: 'keyed', name: 'Q', key: 'd', items: [...Q].sort(byD(st)).map((id) => ({ id, value: st[id].d })) }],
+    (st) => [keyedQ(Q, st, 'd')],
     (st) => vertexIds(g).filter((v) => st[v].inQ === 'no'),
   );
 
@@ -32,12 +28,11 @@ export function runDijkstra(g: Graph, params: Params): Step[] {
       break;
     }
     t.emit(DIJKSTRA, 3);
-    const [u, ...rest] = [...Q].sort(byD(t.st));
-    const tied = rest.filter((x) => t.st[x].d === t.st[u].d);
+    const { u, tied } = extractMin(Q, t.st, 'd');
     Q = Q.filter((x) => x !== u);
     t.st[u].inQ = 'no';
     t.vars = { s, u };
-    t.emit(DIJKSTRA, 4, { bigStep: true, vertices: [u], question: extractQuestion(u, t.st[u].d, tied) });
+    t.emit(DIJKSTRA, 4, { bigStep: true, vertices: [u], question: extractMinQuestion('dijkstra.extract', 4, u, 'd', t.st, tied) });
     for (const v of adjacency(g, u)) {
       t.vars = { s, u, v };
       const hl = { vertices: [u, v], edges: [edgeKey(g, u, v)] };

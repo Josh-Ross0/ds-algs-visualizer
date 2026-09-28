@@ -7,7 +7,7 @@ function graphOf(directed: boolean, vertices: Graph['vertices'], pairs: [string,
 
 export const dfsPresets: Preset[] = [
   {
-    name: 'Lecture example (DFS slide 5)',
+    name: 'Lecture example',
     params: {},
     graph: graphOf(
       true,

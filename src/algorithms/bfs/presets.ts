@@ -11,7 +11,7 @@ function directed(vertices: Graph['vertices'], pairs: [string, string][]): Graph
 
 export const bfsPresets: Preset[] = [
   {
-    name: 'Lecture example (BFS slide 5)',
+    name: 'Lecture example',
     params: { s: 's' },
     graph: undirected(
       [

@@ -6,7 +6,8 @@ export type DSView =
   | { kind: 'queue'; name: string; items: string[] }
   | { kind: 'stack'; name: string; items: string[] }
   // An ordered edge list; `current` is the index being scanned, if any.
-  | { kind: 'edges'; name: string; items: string[]; current: number | null }
+  // `label` overrides the default "(scan order)" orientation label (e.g. Kruskal's T).
+  | { kind: 'edges'; name: string; items: string[]; current: number | null; label?: string }
   // A set shown sorted by one attribute (e.g. Dijkstra's Q by d).
   | { kind: 'keyed'; name: string; key: string; items: { id: string; value: Value }[] };
 export type Answer =
@@ -15,7 +16,14 @@ export type Answer =
   | { kind: 'yesno'; value: boolean }
   | { kind: 'choice'; value: string; options: string[] };
 export type Question = { type: string; prompt: string; answer: Answer; explain: string };
-export type Highlight = { vertices?: string[]; edges?: string[]; treeEdges?: string[]; settled?: string[] };
+export type Highlight = {
+  vertices?: string[];
+  edges?: string[];
+  treeEdges?: string[];
+  settled?: string[];
+  // Edges of the cycle a rejected edge would close (Kruskal).
+  cycle?: string[];
+};
 export type Step = {
   proc: string;
   line: number;

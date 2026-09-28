@@ -154,3 +154,52 @@ test('Dijkstra negative-weight preset: warning on Run, cleared by Edit graph', a
   await userEvent.click(screen.getByRole('button', { name: 'Edit graph' }));
   expect(screen.queryByText(/Dijkstra assumes w ≥ 0/)).toBeNull();
 });
+
+test('home lists Prim and Kruskal', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /^Prim/ })).toHaveAttribute('href', '#/prim');
+  expect(screen.getByRole('link', { name: /^Kruskal/ })).toHaveAttribute('href', '#/kruskal');
+});
+
+test('Prim page: Extract_Min question, final keys and tree', async () => {
+  window.location.hash = '#/prim';
+  const { container } = render(<App />);
+  expect(screen.getByRole('heading', { name: 'Prim' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  const dialog = screen.getByRole('dialog', { name: 'Predict the next step' });
+  expect(dialog).toHaveTextContent('Line 8: which vertex does Extract_Min(Q) return?');
+  await userEvent.click(within(dialog).getByRole('button', { name: 'r' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+  await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+  await userEvent.click(screen.getByLabelText('Predict mode'));
+  await userEvent.click(screen.getByRole('button', { name: 'End' }));
+  const rowH = screen.getByRole('row', { name: /^h/ });
+  expect(rowH).toHaveTextContent('4');
+  expect(rowH).toHaveTextContent('g');
+  expect(container.querySelectorAll('.vertex.settled')).toHaveLength(9);
+  expect(container.querySelectorAll('.edge.tree')).toHaveLength(8);
+});
+
+test('Kruskal page: cycle-free question, final T, no state table', async () => {
+  window.location.hash = '#/kruskal';
+  const { container } = render(<App />);
+  expect(screen.getByLabelText('G.E')).toHaveTextContent(/\(a, c\)/);
+  await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+  expect(screen.queryByRole('table')).toBeNull();
+  expect(container.querySelectorAll('.vertex.v-plain')).toHaveLength(9);
+
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  const dialog = screen.getByRole('dialog', { name: 'Predict the next step' });
+  expect(dialog).toHaveTextContent('Line 6: is (G.V, T ∪ {(c, d)}) cycle free?');
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Yes' }));
+  expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+  await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+  await userEvent.click(screen.getByLabelText('Predict mode'));
+  await userEvent.click(screen.getByRole('button', { name: 'End' }));
+  expect(screen.getByLabelText('T contents')).toHaveTextContent('(d, r)');
+  expect(screen.getByText('T has 8 edges with total weight 29.')).toBeInTheDocument();
+});

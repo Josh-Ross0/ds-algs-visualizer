@@ -18,7 +18,7 @@ export function Home() {
         </p>
         <p>
           Start from a lecture example or draw your own graph, then press Run. At every step you see the current line,
-          the table of values and the queue, call stack, edge list or set Q. Predict mode pauses before key steps
+          the table of values and the queue, call stack, edge list, array A or set Q. Predict mode pauses before key steps
           and asks you what happens next.
         </p>
         <ul className="algo-list">

@@ -1,4 +1,4 @@
-import { edgeKey, edgeList, type Graph } from '../engine/graph';
+import { edgeKey, edgeList, edgeName, type Graph } from '../engine/graph';
 
 type Props = { graph: Graph; onMove(index: number, delta: number): void; onReset(): void };
 
@@ -11,7 +11,7 @@ export function EdgeListPanel({ graph, onMove, onReset }: Props) {
       <p aria-label="G.E" className="adj-list edge-list">
         {list.length === 0 && <span className="muted">∅</span>}
         {list.map((e, i) => {
-          const name = `(${e.u}, ${e.v})`;
+          const name = edgeName(graph, e);
           return (
             <span key={edgeKey(graph, e.u, e.v)} className="chip">
               {i > 0 && (

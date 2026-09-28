@@ -154,6 +154,8 @@ The edge-type question itself is asked only for non-tree edges: a tree edge is t
 
 Bellman-Ford asks "does Relax update" only in the first pass: across all |V| − 1 passes the lecture graph makes 91 Relax calls, only 13 of which change anything (staff decision, 2026-09-28).
 
+Prim's "new `v.key`" question is asked at line 10 for every scanned `v ∈ Q` (15 times on the lecture graph) as "what is `v.key` after lines 10–12?", so it covers both the comparison and the new value. Q is listed by key even though that shows the Extract_Min answer (staff decision, 2026-09-28; the same holds for Dijkstra).
+
 ## 7. Error handling and validation
 
 | Situation | Behavior |

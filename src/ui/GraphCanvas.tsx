@@ -15,6 +15,7 @@ type Props = {
   selected?: string | null;
   edgeFrom?: string | null;
   weighted?: boolean;
+  plainVertices?: boolean;
   onBackgroundPointerDown?(p: Point): void;
   onVertexPointerDown?(id: string): void;
   onEdgeClick?(key: string): void;
@@ -90,6 +91,7 @@ export function GraphCanvas(props: Props) {
         const cls = ['edge'];
         if (hl.treeEdges?.includes(key)) cls.push('tree');
         if (hl.edges?.includes(key)) cls.push('active');
+        if (hl.cycle?.includes(key)) cls.push('cycle');
         if (selected === key) cls.push('selected');
         const markerKind =
           selected === key ? 'selected' : hl.edges?.includes(key) ? 'active' : hl.treeEdges?.includes(key) ? 'tree' : 'plain';
@@ -125,7 +127,8 @@ export function GraphCanvas(props: Props) {
       {graph.vertices.map((v) => {
         const attrs = step?.vertexState[v.id];
         const color = attrs?.color;
-        const look = typeof color === 'string' ? `v-${color}` : attrs && Object.keys(attrs).length > 0 ? 'v-plain' : 'v-none';
+        const hasState = attrs !== undefined && Object.keys(attrs).length > 0;
+        const look = typeof color === 'string' ? `v-${color}` : props.plainVertices || hasState ? 'v-plain' : 'v-none';
         const cls = ['vertex', look];
         if (hl.settled?.includes(v.id)) cls.push('settled');
         if (hl.vertices?.includes(v.id)) cls.push('active');

@@ -27,10 +27,11 @@ Items found during Plan 1 reviews and deliberately deferred. Later plans must pi
 
 ## Plan 4 (Prim, Kruskal)
 
-- `keyed` DSView is ready for Prim's Q by key (`key: 'key'`); `settled` highlight is ready for vertices out of Q.
-- Kruskal needs an "output list"/sorted-array view and a `cycle` highlight (spec §4); neither exists yet.
-- Undirected weighted presets: `weightedDigraph` in `src/algorithms/sssp/shared.ts` is directed-only — add an undirected twin.
+- `keyed` DSView is ready for Prim's Q by key (`key: 'key'`); `settled` highlight is ready for vertices out of Q. Closed: the keyed Q is used by Prim.
+- Kruskal needs an "output list"/sorted-array view and a `cycle` highlight (spec §4); neither exists yet. Closed: Kruskal uses two `edges` views ('A' and 'T') plus `highlight.cycle`, so no new view kind was needed.
+- Undirected weighted presets: `weightedDigraph` in `src/algorithms/sssp/shared.ts` is directed-only — add an undirected twin. Closed: `weightedGraph` lives in `src/algorithms/mst/shared.ts`.
 - Bellman-Ford asks 26 questions per lecture run (13 first-pass yes/no + 13 new v.d); Dijkstra asks 22 (8 Extract_Min + 14 Relax).
+- Prim asks 24 questions per lecture run (9 Extract_Min + 15 v.key); Kruskal asks 15 (one per edge).
 
 ## Accepted as-is (revisit only if users complain)
 
