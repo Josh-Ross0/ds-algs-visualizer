@@ -31,4 +31,4 @@ Items found during Plan 1 reviews and deliberately deferred. Later plans must pi
 - Editor has no keyboard way to add vertices/edges; the canvas is `role="img"`; no `<main>` landmark on the algorithm page; the phone-width e2e checks only edit mode.
 - Self-loops are blocked by `addEdge`, although the lecture allows a directed self-loop (a back edge).
 
-DFS asks about 29 questions per lecture run (8 discover + 8 finish + 13 edge-type on the directed lecture graph); staff may want fewer by default.
+DFS asks 23 questions per lecture run (8 discover + 7 edge-type + 8 finish on the directed lecture graph). Was ~29 (13 edge-type, one per edge); staff decided (2026-09-28) to ask the edge-type question only for non-tree edges, since a tree edge is the "normal" case already predicted via the discover question — the answer options are unchanged, so "tree" remains a plausible wrong answer.

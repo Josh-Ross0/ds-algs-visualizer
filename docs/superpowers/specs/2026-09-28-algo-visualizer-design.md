@@ -140,7 +140,7 @@ type Question = {
 | Algorithm | State table | DS panel | Graph highlights | Params | Predict questions |
 |---|---|---|---|---|---|
 | BFS | color, d, π | FIFO queue | colors, π-tree | s | next dequeued vertex; new `v.d` |
-| DFS | color, d, f, π; `time` | recursion stack | colors, π-tree | — | next visited vertex; `u.f`; edge type |
+| DFS | color, d, f, π; `time` | recursion stack | colors, π-tree | — | next visited vertex; `u.f`; edge type (non-tree edges only) |
 | Bellman-Ford | d, π; `i` | edge list, current edge | relaxed edge; negative-cycle edge | s, edge order | does Relax update; new `v.d` |
 | Dijkstra | d, π, in Q | Q by d | extracted set, π-tree | s | Extract Min result; does Relax update |
 | Prim | key, π, in Q | Q by key | tree edges | r | Extract Min result; new `v.key` |
@@ -149,6 +149,8 @@ type Question = {
 Answer input: click a vertex/edge, type a number, or yes/no. Wrong answer shows the correct one and a one-line explanation, then playback continues. Score is shown at the end of the run.
 
 Edge types (tree/back/forward/crossing) are shown only inside predict questions and their feedback; never drawn on the graph, listed, or mentioned in step notes (staff decision, 2026-09-28).
+
+The edge-type question itself is asked only for non-tree edges: a tree edge is the "normal" case the student already predicts via the discover question, so asking again is redundant. The answer options are unchanged (directed: tree/back/forward/crossing; undirected: tree/back), so "tree" remains a plausible wrong answer (staff decision, 2026-09-28).
 
 ## 7. Error handling and validation
 

@@ -33,7 +33,10 @@ test('edge-type question can be answered with the keyboard', async ({ page }) =>
     }
   }
   await expect(dialog).toContainText('What type is it?');
+  // First edge-type question in the lecture trace is (v5, v1): a back edge.
   await expect(page.getByRole('button', { name: 'tree' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'back' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status')).toContainText('Correct.');
   // Focus returns to the player control used to advance, not to <body>.

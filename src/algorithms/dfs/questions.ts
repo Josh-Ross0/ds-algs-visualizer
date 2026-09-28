@@ -4,7 +4,7 @@ export type EdgeType = 'tree' | 'back' | 'forward' | 'crossing';
 
 export const dfsQuestionTypes = [
   { type: 'dfs.discover', label: 'Which vertex is discovered next' },
-  { type: 'dfs.edgeType', label: 'Type of each explored edge' },
+  { type: 'dfs.edgeType', label: 'Type of each non-tree edge' },
   { type: 'dfs.finish', label: 'Value of u.f' },
 ];
 

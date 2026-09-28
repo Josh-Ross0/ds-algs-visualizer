@@ -70,7 +70,10 @@ export function runDfs(g: Graph): Step[] {
       if (!explored.has(key)) {
         explored.add(key);
         const t = classify(u, v);
-        question = edgeTypeQuestion(u, v, t, st[u].d as number, st[v].d as number | undefined, g.directed);
+        // Staff decision, 2026-09-28: only non-tree edges are asked about.
+        if (t !== 'tree') {
+          question = edgeTypeQuestion(u, v, t, st[u].d as number, st[v].d as number | undefined, g.directed);
+        }
       }
       emit(DFS_VISIT, 5, { ...hl, note: `${v}.color is ${st[v].color}.`, question });
       if (!isWhite) continue;
