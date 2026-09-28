@@ -6,6 +6,7 @@ type Props = { question: Question; vertices: string[]; onAnswer(a: Answer): void
 export function QuestionOverlay({ question, vertices, onAnswer, onSkip }: Props) {
   const [text, setText] = useState('');
   const kind = question.answer.kind;
+  const answer = question.answer;
   const firstControlRef = useRef<HTMLButtonElement | HTMLInputElement | null>(null);
   const setFirstControl = (el: HTMLButtonElement | HTMLInputElement | null) => {
     firstControlRef.current = el;
@@ -58,6 +59,18 @@ export function QuestionOverlay({ question, vertices, onAnswer, onSkip }: Props)
         <div className="choices">
           <button type="button" onClick={() => onAnswer({ kind: 'yesno', value: true })}>Yes</button>
           <button type="button" onClick={() => onAnswer({ kind: 'yesno', value: false })}>No</button>
+        </div>
+      )}
+      {answer.kind === 'choice' && (
+        <div className="choices">
+          {answer.options.map((o, i) => (
+            <button
+              key={o}
+              ref={i === 0 ? setFirstControl : undefined}
+              type="button"
+              onClick={() => onAnswer({ kind: 'choice', value: o, options: answer.options })}
+            >{o}</button>
+          ))}
         </div>
       )}
       <button type="button" className="skip" onClick={onSkip}>Skip</button>

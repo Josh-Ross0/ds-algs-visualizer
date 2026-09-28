@@ -61,3 +61,20 @@ test('switching mode while dragging stops the drag', async () => {
   fireEvent.pointerMove(svg, { clientX: 250, clientY: 250 });
   expect(latest.vertices.find((v) => v.id === 'a')).toEqual({ id: 'a', x: 100, y: 100 });
 });
+
+test('adding an 11th vertex shows the cap message', async () => {
+  const full: Graph = {
+    directed: false,
+    vertices: Array.from({ length: 10 }, (_, i) => ({ id: `v${i + 1}`, x: 40 + i * 50, y: 100 })),
+    edges: [],
+    adjOrder: {},
+  };
+  const onChange = vi.fn();
+  const { container } = render(<GraphEditor graph={full} onChange={onChange} />);
+  await userEvent.click(screen.getByRole('button', { name: 'Add vertex' }));
+  const svg = container.querySelector('svg')! as any;
+  svg.getScreenCTM = () => null;
+  fireEvent.pointerDown(container.querySelector('.canvas-bg')!, { clientX: 300, clientY: 300 });
+  expect(screen.getByRole('alert')).toHaveTextContent('Graphs are limited to 10 vertices so they stay readable.');
+  expect(onChange).not.toHaveBeenCalled();
+});

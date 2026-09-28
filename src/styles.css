@@ -124,3 +124,4 @@ button.primary { background: var(--accent); color: #ffffff; border-color: var(--
 @media (max-width: 800px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
 }
+.state { overflow-x: auto; }

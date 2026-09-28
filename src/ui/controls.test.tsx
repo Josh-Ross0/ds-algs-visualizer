@@ -87,3 +87,17 @@ test('settings toggles predict mode and question types', async () => {
   await userEvent.click(screen.getByLabelText('Dequeue'));
   expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_SETTINGS, disabledTypes: ['bfs.dequeue'] });
 });
+
+const cq: Question = {
+  type: 'dfs.edgeType', prompt: 'Type?', explain: 'Gray.',
+  answer: { kind: 'choice', value: 'back', options: ['tree', 'back', 'forward', 'crossing'] },
+};
+
+test('choice question offers one button per option and focuses the first', async () => {
+  const onAnswer = vi.fn();
+  render(<QuestionOverlay question={cq} vertices={['a']} onAnswer={onAnswer} onSkip={() => {}} />);
+  expect(screen.getByRole('button', { name: 'tree' })).toHaveFocus();
+  expect(screen.queryByRole('button', { name: 'a' })).toBeNull();
+  await userEvent.click(screen.getByRole('button', { name: 'crossing' }));
+  expect(onAnswer).toHaveBeenCalledWith({ kind: 'choice', value: 'crossing', options: ['tree', 'back', 'forward', 'crossing'] });
+});
