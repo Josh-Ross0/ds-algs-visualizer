@@ -140,7 +140,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .panel h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
 
 /* ---------- Graph: squared paper / chalkboard ---------- */
-.graph-canvas {
+.graph-canvas, .tree-canvas {
   width: 100%;
   height: auto;
   display: block;
@@ -198,6 +198,22 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .vertex.settled text { fill: #ffffff; }
 .vertex.active circle { stroke: var(--marker); stroke-width: 5; stroke-dasharray: none; }
 .vertex.selected circle, .vertex.edge-from circle { stroke: var(--red); stroke-width: 5; stroke-dasharray: none; }
+
+/* ---------- Trees (BST) ---------- */
+.tree-canvas { max-height: 460px; }
+.tree-edge { stroke: var(--edge); stroke-width: 2; }
+.tree-edge.active { stroke: var(--marker); stroke-width: 4; stroke-dasharray: 7 5; }
+.tnode { cursor: pointer; transition: transform 0.3s ease; }
+.tnode circle { fill: var(--v-white); stroke: var(--v-stroke); stroke-width: 2; }
+.tnode text { font-family: var(--font-text); font-size: 14px; font-weight: 700; fill: #000000; pointer-events: none; }
+.tnode.active circle { stroke: var(--marker); stroke-width: 5; }
+.tnode.detached circle { stroke-dasharray: 5 3; }
+.tnode .ptr-tag { font-family: var(--font-code); font-size: 12px; fill: var(--marker); }
+.nil-slot circle { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 4; }
+.nil-slot text { font-family: var(--font-code); font-size: 11px; fill: var(--muted); }
+.nil-edge { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 4; }
+.empty-note { font-family: var(--font-code); font-size: 14px; fill: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .tnode { transition: none; } }
 
 /* ---------- Pseudocode: the sheet, and the one highlighter ---------- */
 .pseudocode {
