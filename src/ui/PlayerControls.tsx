@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { score, type PlayerAction, type PlayerState } from './player';
+import { score, type PlayerAction, type PlayerState } from './playerReducer';
 import { SPEED_OPTIONS } from './settings';
 
 type Props = {

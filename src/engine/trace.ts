@@ -14,7 +14,9 @@ export type Answer =
   | { kind: 'vertex'; value: string }
   | { kind: 'number'; value: number }
   | { kind: 'yesno'; value: boolean }
-  | { kind: 'choice'; value: string; options: string[] };
+  | { kind: 'choice'; value: string; options: string[] }
+  // A tree node picked by id (label = its key as shown); value null means NIL.
+  | { kind: 'node'; value: string | null; label: string; nil: boolean };
 export type Question = { type: string; prompt: string; answer: Answer; explain: string };
 export type Highlight = {
   vertices?: string[];
@@ -24,16 +26,19 @@ export type Highlight = {
   // Edges of the cycle a rejected edge would close (Kruskal).
   cycle?: string[];
 };
-export type Step = {
+// What the player, questions and pseudocode panel need from any step.
+export type StepCore = {
   proc: string;
   line: number;
   bigStep: boolean;
-  vertexState: VertexState;
   vars: Record<string, Value>;
-  ds: DSView[];
-  highlight: Highlight;
   note?: string;
   question?: Question;
+};
+export type Step = StepCore & {
+  vertexState: VertexState;
+  ds: DSView[];
+  highlight: Highlight;
 };
 
 export function formatValue(v: Value): string {
@@ -45,6 +50,7 @@ export function formatValue(v: Value): string {
 
 export function formatAnswer(a: Answer): string {
   if (a.kind === 'yesno') return a.value ? 'yes' : 'no';
+  if (a.kind === 'node') return a.label;
   return formatValue(a.value);
 }
 

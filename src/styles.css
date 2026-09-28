@@ -213,7 +213,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .pseudocode li { display: flex; gap: 10px; padding: 0 6px; }
 .pseudocode li code { white-space: pre; }
 .pseudocode .ln { color: var(--muted); min-width: 2.5ch; text-align: right; flex: none; }
-.pseudocode li.current {
+.pseudocode li.current, .pseudocode h3.current {
   margin: 1px -6px;
   padding: 1px 12px;
   background: var(--highlighter);

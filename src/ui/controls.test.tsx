@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import type { Question } from '../engine/trace';
-import { initialPlayerState } from './player';
+import { initialPlayerState } from './playerReducer';
 import { PlayerControls, type PlayerControlsHandle } from './PlayerControls';
 import { Feedback, QuestionOverlay } from './QuestionOverlay';
 import { DEFAULT_SETTINGS } from './settings';
@@ -135,4 +135,38 @@ test('yes/no question focuses Yes on mount', () => {
   const yq: Question = { type: 't', prompt: 'Update?', explain: 'e', answer: { kind: 'yesno', value: true } };
   render(<QuestionOverlay question={yq} vertices={[]} onAnswer={() => {}} onSkip={() => {}} />);
   expect(screen.getByRole('button', { name: 'Yes' })).toHaveFocus();
+});
+
+const nodeQ: Question = {
+  type: 't', prompt: 'Which node?', explain: 'e',
+  answer: { kind: 'node', value: 'n2', label: '12', nil: true },
+};
+
+test('node question offers one button per node plus NIL, and reports labels', async () => {
+  const onAnswer = vi.fn();
+  render(
+    <QuestionOverlay
+      question={nodeQ}
+      vertices={[]}
+      nodes={[{ id: 'n1', label: '4' }, { id: 'n2', label: '12' }]}
+      onAnswer={onAnswer}
+      onSkip={() => {}}
+    />,
+  );
+  expect(screen.getByRole('button', { name: '4' })).toHaveFocus();
+  await userEvent.click(screen.getByRole('button', { name: '12' }));
+  expect(onAnswer).toHaveBeenLastCalledWith({ kind: 'node', value: 'n2', label: '12', nil: true });
+  await userEvent.click(screen.getByRole('button', { name: 'NIL' }));
+  expect(onAnswer).toHaveBeenLastCalledWith({ kind: 'node', value: null, label: 'NIL', nil: true });
+});
+
+test('node question without NIL shows no NIL button; feedback names the node by label', () => {
+  const q: Question = { ...nodeQ, answer: { kind: 'node', value: 'n2', label: '12', nil: false } };
+  render(<QuestionOverlay question={q} vertices={[]} nodes={[{ id: 'n2', label: '12' }]} onAnswer={() => {}} onSkip={() => {}} />);
+  expect(screen.queryByRole('button', { name: 'NIL' })).toBeNull();
+});
+
+test('feedback for a wrong node answer shows the label, not the id', () => {
+  render(<Feedback correct={false} question={nodeQ} onContinue={() => {}} />);
+  expect(screen.getByRole('status')).toHaveTextContent('The answer is 12.');
 });

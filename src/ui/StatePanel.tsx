@@ -1,6 +1,10 @@
-import { formatValue, type Step } from '../engine/trace';
+import { formatValue, type StepCore, type VertexState } from '../engine/trace';
 
-type Props = { columns: { key: string; label: string }[]; vertices: string[]; step?: Step };
+type Props = {
+  columns: { key: string; label: string }[];
+  vertices: string[];
+  step?: StepCore & { vertexState?: VertexState };
+};
 
 export function StatePanel({ columns, vertices, step }: Props) {
   if (!step) return <div className="panel state"><p className="muted">Press Run to start.</p></div>;
@@ -24,7 +28,7 @@ export function StatePanel({ columns, vertices, step }: Props) {
             {vertices.map((v) => (
               <tr key={v}>
                 <th scope="row">{v}</th>
-                {columns.map((c) => <td key={c.key}>{formatValue(step.vertexState[v]?.[c.key])}</td>)}
+                {columns.map((c) => <td key={c.key}>{formatValue(step.vertexState?.[v]?.[c.key])}</td>)}
               </tr>
             ))}
           </tbody>
