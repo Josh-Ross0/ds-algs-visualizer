@@ -9,6 +9,7 @@ export const bfs: AlgorithmDef = {
   title: 'Breadth-First Search (BFS)',
   directed: 'toggle',
   weighted: false,
+  order: 'adjacency',
   procs: bfsProcs,
   params: [{ name: 's', label: 'Source s' }],
   stateColumns: [

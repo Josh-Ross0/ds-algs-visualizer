@@ -258,6 +258,10 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .adjacency ul { list-style: none; margin: 0 0 10px; padding: 0; }
 .adjacency li { padding: 2px 0; }
 .adj-head { margin-right: 6px; font-weight: 700; }
+.edge-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.weight-field { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; font-family: var(--font-code); }
+.weight-field input { width: 7em; }
+.weight-field input[aria-invalid='true'] { border-color: var(--red); }
 
 /* ---------- Player ---------- */
 .player { display: flex; flex-direction: column; gap: 10px; }

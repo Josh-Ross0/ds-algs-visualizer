@@ -9,6 +9,7 @@ export const dfs: AlgorithmDef = {
   title: 'Depth-First Search (DFS)',
   directed: 'toggle',
   weighted: false,
+  order: 'adjacency',
   procs: dfsProcs,
   params: [],
   stateColumns: [

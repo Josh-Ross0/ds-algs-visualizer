@@ -42,6 +42,7 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
         <GraphCanvas
           graph={graph}
           step={step}
+          weighted={def.weighted}
           onVertexPointerDown={
             pending?.answer.kind === 'vertex'
               ? (id) => dispatch({ type: 'answer', answer: { kind: 'vertex', value: id } })
@@ -71,7 +72,7 @@ export function Visualizer({ def, graph, steps, settings, onSettingsChange }: Pr
       <div className="side-col">
         <PseudocodePanel procs={def.procs} current={step} />
         <StatePanel columns={def.stateColumns} vertices={vertices} step={step} />
-        <AdjacencyPanel graph={graph} />
+        {def.order === 'adjacency' && <AdjacencyPanel graph={graph} />}
         <SettingsPanel settings={settings} questionTypes={def.questionTypes} onChange={onSettingsChange} />
       </div>
     </div>

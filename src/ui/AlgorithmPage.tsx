@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import type { AlgorithmDef, Params, Validation } from '../algorithms/types';
-import { moveInAdjacency, resetAdjacency, setDirected, vertexIds, type Graph } from '../engine/graph';
+import {
+  moveInAdjacency, moveInEdgeList, resetAdjacency, resetEdgeOrder, setDirected, vertexIds, type Graph,
+} from '../engine/graph';
 import type { Step } from '../engine/trace';
 import { AdjacencyPanel } from './AdjacencyPanel';
+import { EdgeListPanel } from './EdgeListPanel';
 import { GraphEditor } from './GraphEditor';
 import { PseudocodePanel } from './PseudocodePanel';
 import { useSettings } from './settings';
@@ -73,7 +76,7 @@ export function AlgorithmPage({ def }: { def: AlgorithmDef }) {
           </label>
         )}
         {running ? (
-          <button type="button" onClick={() => setSteps(null)}>Edit graph</button>
+          <button type="button" onClick={() => { setSteps(null); setMessages(NO_MESSAGES); }}>Edit graph</button>
         ) : (
           <button type="button" className="primary" onClick={run}>Run</button>
         )}
@@ -85,15 +88,23 @@ export function AlgorithmPage({ def }: { def: AlgorithmDef }) {
       ) : (
         <div className="layout">
           <div className="main-col">
-            <GraphEditor graph={graph} onChange={setGraph} />
+            <GraphEditor graph={graph} weighted={def.weighted} onChange={setGraph} />
           </div>
           <div className="side-col">
             <PseudocodePanel procs={def.procs} />
-            <AdjacencyPanel
-              graph={graph}
-              onMove={(u, i, d) => setGraph(moveInAdjacency(graph, u, i, d))}
-              onReset={() => setGraph(resetAdjacency(graph))}
-            />
+            {def.order === 'edges' ? (
+              <EdgeListPanel
+                graph={graph}
+                onMove={(i, d) => setGraph(moveInEdgeList(graph, i, d))}
+                onReset={() => setGraph(resetEdgeOrder(graph))}
+              />
+            ) : (
+              <AdjacencyPanel
+                graph={graph}
+                onMove={(u, i, d) => setGraph(moveInAdjacency(graph, u, i, d))}
+                onReset={() => setGraph(resetAdjacency(graph))}
+              />
+            )}
           </div>
         </div>
       )}

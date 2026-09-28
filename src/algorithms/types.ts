@@ -12,6 +12,8 @@ export type AlgorithmDef = {
   title: string;
   directed: boolean | 'toggle';
   weighted: boolean;
+  // Which scan order the student can edit: neighbor lists (G.Adj) or the edge list (G.E).
+  order: 'adjacency' | 'edges';
   procs: Proc[];
   params: ParamSpec[];
   stateColumns: { key: string; label: string }[];
