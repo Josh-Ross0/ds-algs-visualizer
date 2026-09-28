@@ -18,6 +18,7 @@ test('insert 10, keep the result, then search finds it', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Done: keep result' }));
   expect(keysOnCanvas(container)).toContain('10');
   expect(container.querySelectorAll('.tnode.active, .tnode.detached')).toHaveLength(0);
+  expect(screen.getByRole('button', { name: 'Run' })).toHaveFocus();
 
   await userEvent.selectOptions(screen.getByLabelText('Operation'), 'search');
   await userEvent.clear(screen.getByLabelText('Key'));
@@ -36,6 +37,7 @@ test('Back to the tree discards the run', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'End' }));
   await userEvent.click(screen.getByRole('button', { name: 'Back to the tree' }));
   expect(keysOnCanvas(container)).toContain('17');
+  expect(screen.getByRole('button', { name: 'Run' })).toHaveFocus();
 });
 
 test('blocked inputs show a message and do not run', async () => {

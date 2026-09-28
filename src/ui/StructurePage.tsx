@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { findKey, inorder, type NodeId } from '../engine/tree';
 import type { StructureDef, TreeStep } from '../structures/types';
 import { DSPanel } from './DSPanel';
@@ -19,6 +19,16 @@ export function StructurePage({ def }: { def: StructureDef }) {
   const [runId, setRunId] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
   const [settings, setSettings] = useSettings();
+  // Keep/Back both return the page to setup state, unmounting the button the
+  // student clicked, so focus would fall to <body>. Send it to Run instead.
+  const runRef = useRef<HTMLButtonElement>(null);
+  const focusRunRef = useRef(false);
+  useEffect(() => {
+    if (steps === null && focusRunRef.current) {
+      focusRunRef.current = false;
+      runRef.current?.focus();
+    }
+  }, [steps]);
 
   const op = def.operations.find((o) => o.id === opId)!;
   const procs = op.procs.map((name) => def.procs.find((p) => p.name === name)!);
@@ -42,6 +52,11 @@ export function StructurePage({ def }: { def: StructureDef }) {
   const keep = () => {
     setTree(steps![steps!.length - 1].view.tree);
     setSteps(null);
+    focusRunRef.current = true;
+  };
+  const backToTree = () => {
+    setSteps(null);
+    focusRunRef.current = true;
   };
 
   return (
@@ -79,9 +94,9 @@ export function StructurePage({ def }: { def: StructureDef }) {
           </label>
         )}
         {steps === null ? (
-          <button type="button" className="primary" disabled={needsKey && key === null} onClick={run}>Run</button>
+          <button type="button" ref={runRef} className="primary" disabled={needsKey && key === null} onClick={run}>Run</button>
         ) : (
-          <button type="button" onClick={() => setSteps(null)}>Back to the tree</button>
+          <button type="button" onClick={backToTree}>Back to the tree</button>
         )}
       </div>
       {errors.map((m) => <p key={m} role="alert" className="feedback bad">{m}</p>)}
