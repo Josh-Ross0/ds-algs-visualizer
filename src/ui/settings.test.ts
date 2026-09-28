@@ -30,3 +30,15 @@ test('isAsked respects predict switch and disabled types', () => {
   expect(isAsked({ ...DEFAULT_SETTINGS, predict: false }, q)).toBe(false);
   expect(isAsked({ ...DEFAULT_SETTINGS, disabledTypes: ['bfs.dequeue'] }, q)).toBe(false);
 });
+
+test('malformed stored fields fall back to defaults field by field', () => {
+  const m = memory();
+  m.setItem('dsalgs.settings.v1', JSON.stringify({ predict: false, disabledTypes: null, speedMs: -5 }));
+  expect(loadSettings(m)).toEqual({ ...DEFAULT_SETTINGS, predict: false });
+  m.setItem('dsalgs.settings.v1', JSON.stringify({ predict: 'yes', disabledTypes: ['a', 3], speedMs: 250 }));
+  expect(loadSettings(m)).toEqual({ ...DEFAULT_SETTINGS, speedMs: 250 });
+  m.setItem('dsalgs.settings.v1', '42');
+  expect(loadSettings(m)).toEqual(DEFAULT_SETTINGS);
+  m.setItem('dsalgs.settings.v1', 'null');
+  expect(loadSettings(m)).toEqual(DEFAULT_SETTINGS);
+});

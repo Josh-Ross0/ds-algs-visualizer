@@ -16,8 +16,10 @@ function renderDs(d: DSView) {
           </div>
         </div>
       );
+    case 'stack':
+      return null;
     default:
-      return assertNever(d.kind);
+      return assertNever(d as never);
   }
 }
 

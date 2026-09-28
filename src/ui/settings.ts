@@ -15,10 +15,27 @@ function browserStorage(): KV | undefined {
   }
 }
 
+function sanitize(raw: unknown): Settings {
+  if (typeof raw !== 'object' || raw === null) return DEFAULT_SETTINGS;
+  const r = raw as Record<string, unknown>;
+  const types = r.disabledTypes;
+  return {
+    predict: typeof r.predict === 'boolean' ? r.predict : DEFAULT_SETTINGS.predict,
+    disabledTypes:
+      Array.isArray(types) && types.every((t) => typeof t === 'string')
+        ? (types as string[])
+        : DEFAULT_SETTINGS.disabledTypes,
+    speedMs:
+      typeof r.speedMs === 'number' && Number.isFinite(r.speedMs) && r.speedMs > 0
+        ? r.speedMs
+        : DEFAULT_SETTINGS.speedMs,
+  };
+}
+
 export function loadSettings(storage: KV | undefined = browserStorage()): Settings {
   try {
     const raw = storage?.getItem(KEY);
-    return raw ? { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } : DEFAULT_SETTINGS;
+    return raw ? sanitize(JSON.parse(raw)) : DEFAULT_SETTINGS;
   } catch {
     return DEFAULT_SETTINGS;
   }
