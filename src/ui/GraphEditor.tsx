@@ -10,7 +10,7 @@ type Props = { graph: Graph; weighted?: boolean; onChange(g: Graph): void };
 
 function WeightField({ edge, onChange }: { edge: Edge; onChange(w: number): void }) {
   const [text, setText] = useState(String(edge.w ?? DEFAULT_WEIGHT));
-  const parse = (t: string) => (t.trim() !== '' && Number.isFinite(Number(t)) ? Number(t) : null);
+  const parse = (t: string) => (t.trim() !== '' && Number.isInteger(Number(t)) ? Number(t) : null);
   return (
     <label className="weight-field">
       Weight w({edge.u}, {edge.v})

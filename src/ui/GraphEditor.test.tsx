@@ -117,6 +117,15 @@ test('weight field ignores text that is not a number', async () => {
   expect(latest.edges).toEqual([{ u: 'a', v: 'b', w: 2 }]);
 });
 
+test('weight field ignores decimals: course examples use integer weights only', async () => {
+  const { container } = render(<WeightedHarness />);
+  fireEvent.click(container.querySelector('[data-edge="a->b"]')!);
+  const field = screen.getByLabelText('Weight w(a, b)');
+  fireEvent.change(field, { target: { value: '1.5' } });
+  expect(field).toHaveAttribute('aria-invalid', 'true');
+  expect(latest.edges).toEqual([{ u: 'a', v: 'b', w: 2 }]);
+});
+
 test('unweighted editor shows no weight field', () => {
   const { container } = render(<Harness />);
   fireEvent.click(container.querySelector('[data-edge="a--b"]')!);
