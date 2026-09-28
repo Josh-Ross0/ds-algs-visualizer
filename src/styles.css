@@ -114,7 +114,8 @@ select, input { font: inherit; color: var(--fg); background: var(--bg); border: 
 a { color: var(--accent); }
 .page-header h1 { margin: 4px 0 12px; font-size: 24px; }
 .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
-.toolbar label { display: flex; gap: 6px; align-items: center; }
+.toolbar label { display: flex; gap: 6px; align-items: center; max-width: 100%; }
+.toolbar select { min-width: 0; max-width: 100%; }
 button.primary { background: var(--accent); color: #ffffff; border-color: var(--accent); }
 .feedback.warn { background: color-mix(in srgb, #d99a00 15%, transparent); border: 1px solid #d99a00; }
 .layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; }

@@ -31,4 +31,10 @@ test('no horizontal scroll at phone width', async ({ page }) => {
   await page.goto('/#/bfs');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
+  // Font widths differ across OSes, so also require toolbar controls to stay inside the toolbar.
+  const toolbarOverflow = await page.evaluate(() => {
+    const bar = document.querySelector('.toolbar')!.getBoundingClientRect();
+    return [...document.querySelectorAll('.toolbar *')].some((el) => el.getBoundingClientRect().right > bar.right + 0.5);
+  });
+  expect(toolbarOverflow).toBe(false);
 });
