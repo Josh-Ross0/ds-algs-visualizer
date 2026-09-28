@@ -39,9 +39,11 @@ Backend, accounts, analytics, question-authoring UI, shareable links, Hebrew UI,
 
 ## 3. Scope of v1 algorithms
 
-BFS, DFS, Topological sort, SCC, Bellman-Ford, Dijkstra, Prim, Kruskal.
+BFS, DFS, Bellman-Ford, Dijkstra, Prim, Kruskal.
 
-Pseudocode is taken verbatim from `Lectures/bfs.pdf`, `dfs.pdf`, `shortest-paths.pdf`, `mst.pdf`, including helper procedures (`BFS Initialization`, `DFS Visit`, `Initialize Single Source`, `Relax`).
+Topological sort and SCC were dropped from v1 on 2026-09-28 (staff decision).
+
+Pseudocode is taken verbatim from `Lectures/bfs.pdf`, `dfs.pdf`, `shortest-paths.pdf`, `mst.pdf`, including helper procedures (`BFS_Initialization`, `DFS_Visit`, `Initialize Single Source`, `Relax`), spelled exactly as on the rendered slides (pdftotext drops underscores).
 
 ## 4. Conventions
 
@@ -62,7 +64,6 @@ Where slides use an abstract structure, the visualizer does too. Dijkstra and Pr
 | Algorithm | Directed | Weighted |
 |---|---|---|
 | BFS, DFS | toggle | no |
-| Topological sort, SCC | directed | no |
 | Bellman-Ford, Dijkstra | directed | yes |
 | Prim, Kruskal | undirected | yes |
 
@@ -83,7 +84,7 @@ src/
       presets.ts     preset graphs
       questions.ts   predict-question generators
       run.test.ts
-    dfs/ topo-sort/ scc/ bellman-ford/ dijkstra/ prim/ kruskal/
+    dfs/ bellman-ford/ dijkstra/ prim/ kruskal/
   ui/
     GraphCanvas      SVG view: vertex colors, edge highlight, tree edges
     GraphEditor      editing interactions, 10-vertex cap
@@ -140,8 +141,6 @@ type Question = {
 |---|---|---|---|---|---|
 | BFS | color, d, π | FIFO queue | colors, π-tree | s | next dequeued vertex; new `v.d` |
 | DFS | color, d, f, π; `time` | recursion stack | colors, π-tree; edge types at end | — | next visited vertex; `u.f`; edge type |
-| Topo sort | DFS + output | list by decreasing f | as DFS | — | next vertex in output |
-| SCC | pass 1, Gᵀ, pass 2 | components | components colored | — | which component a vertex joins |
 | Bellman-Ford | d, π; `i` | edge list, current edge | relaxed edge; negative-cycle edge | s, edge order | does Relax update; new `v.d` |
 | Dijkstra | d, π, in Q | Q by d | extracted set, π-tree | s | Extract Min result; does Relax update |
 | Prim | key, π, in Q | Q by key | tree edges | r | Extract Min result; new `v.key` |
@@ -154,7 +153,6 @@ Answer input: click a vertex/edge, type a number, or yes/no. Wrong answer shows 
 | Situation | Behavior |
 |---|---|
 | Dijkstra with a negative weight | Warn ("Dijkstra assumes w ≥ 0"), allow run so students see the failure |
-| Topo sort on a cyclic graph | Run; report back edge → "not a DAG" |
 | Prim/Kruskal on disconnected graph | Block run with message |
 | Bellman-Ford with reachable negative cycle | Run; highlight line 7 and the violating edge |
 | No source/root selected | Prompt to click a vertex |

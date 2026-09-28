@@ -7,14 +7,12 @@ Items found during Plan 1 reviews and deliberately deferred. Later plans must pi
 - Helper-procedure names come from the **rendered** slides, not `pdftotext` output. The slides use underscores (`BFS_Initialization`); pdftotext drops them. Check `DFS_Visit`, `Initialize_Single_Source`, `Extract_Min`, etc. the same way.
 - A question on step `i` is shown over step `i − 1`. Every algorithm's tests must call `assertQuestionsPredictable` (in `src/algorithms/testing.ts`) with a check that step `i − 1` lets the student predict the answer without revealing it.
 
-## Plan 2 (DFS, topological sort, SCC) — start with a contract task
+## Plan 2 (DFS only — topological sort and SCC dropped) — start with a contract task
 
-- Optional `Step.graph` so a trace can display a different graph (SCC pass 2 runs on Gᵀ); `Visualizer` uses `step.graph ?? graph`. At the same time, make `treeEdgesFromPi` skip keys whose edge does not exist.
-- New answer kinds: `choice` (edge type tree/back/forward/cross, SCC component) and `edge` (wire `GraphCanvas.onEdgeClick` to answers in `Visualizer`), with matching `QuestionOverlay` branches.
+- New answer kinds: `choice` (edge type tree/back/forward/crossing), with a matching `QuestionOverlay` branch. The `edge` kind is not needed while no question asks the student to pick an edge.
 - New `DSView` kinds (recursion stack, output list). `DSPanel` already switches exhaustively, so each new kind fails to compile until it is rendered.
-- `GraphCanvas` arrow marker id must be unique per canvas (`useId`) if two graphs are shown at once.
 - `loadSettings` should validate the stored shape (a stored `disabledTypes: null` would crash `isAsked`).
-- State table needs `overflow-x: auto` (DFS adds `f`, SCC adds more columns).
+- State table needs `overflow-x: auto` (DFS adds `f`).
 - Add a test for the 10-vertex cap message in `GraphEditor`.
 
 ## Plan 3 (Bellman-Ford, Dijkstra)
