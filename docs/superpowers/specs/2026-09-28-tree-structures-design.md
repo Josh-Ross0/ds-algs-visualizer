@@ -1,7 +1,7 @@
 # DS&Algs Visualizer — Tree Structures Design (BST, Binary Heap, 2-3 Tree)
 
 Date: 2026-09-28
-Status: Approved in conversation; awaiting review of this written spec
+Status: Approved
 
 Builds on `2026-09-28-algo-visualizer-design.md` (the graph-track spec). Everything there about fidelity, predict mode, settings, hosting and visual design still applies unless this document says otherwise.
 
@@ -105,6 +105,7 @@ Graph-track rules apply:
 - one step per executed pseudocode line, showing the state after that line;
 - a question on step i is shown over step i − 1, whose note must not reveal the answer;
 - every question type can be switched off or skipped.
+- every operation starts with a call step (line 0 of the main procedure, drawn as its highlighted signature) so the first real line can carry a question.
 
 ### BST
 
