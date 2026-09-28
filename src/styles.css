@@ -218,6 +218,8 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .queue-items .chip { margin: 0 0 4px -1.5px; padding: 6px 12px; border-radius: 0; }
 .queue-items .chip:first-child { margin-left: 0; }
 .stack .queue-items .chip:first-child { border-left: 5px solid var(--ink); }
+/* The stack reads bottom to top: chips must never wrap onto a new row. */
+.stack .queue-items { flex-wrap: nowrap; overflow-x: auto; }
 
 .chip {
   display: inline-flex;
@@ -239,7 +241,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 /* ---------- Player ---------- */
 .player { display: flex; flex-direction: column; gap: 10px; }
 .player-buttons { display: flex; gap: 6px; }
-.player-buttons button { flex: 0 1 48px; min-width: 0; height: 40px; padding: 0; font-size: 18px; line-height: 1; }
+.player-buttons button { flex: 0 1 48px; min-width: 44px; height: 44px; padding: 0; font-size: 18px; line-height: 1; }
 .player input[type='range'] { width: 100%; }
 .player-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; color: var(--muted); }
 .player-meta label { display: flex; gap: 8px; align-items: center; }
@@ -305,6 +307,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .algo-sig { color: var(--muted); font-size: 16px; }
 .algo-list a:hover .algo-title { text-decoration: underline; }
 .excerpt { margin: 0; }
+.excerpt .excerpt-sig { margin: 0 0 8px; font-size: 16px; font-weight: 700; font-family: var(--font-code); }
 .excerpt .pseudocode ol { font-size: 16px; }
 .excerpt figcaption { margin-top: 10px; font-size: 14px; color: var(--muted); }
 
@@ -316,6 +319,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
   .algo-list a { flex-direction: column; }
   .pseudocode { padding: 12px 10px; }
   .pseudocode ol, .excerpt .pseudocode ol { font-size: 13px; }
+  .player-buttons { gap: 4px; }
   .home h1 { font-size: 31px; }
   .home .lede { font-size: 18px; }
   .page-header h1 { font-size: 25px; }

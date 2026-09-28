@@ -1,7 +1,8 @@
+import { bfs } from '../algorithms/bfs';
 import { ALGORITHMS } from '../algorithms/registry';
 
-// A real excerpt of the first algorithm's main procedure, shown with the current-line highlight.
-const sample = ALGORITHMS[0].procs[0];
+// A real excerpt of BFS's main procedure, shown with the current-line highlight.
+const sample = bfs.procs[0];
 const EXCERPT_FROM = 2;
 const EXCERPT_TO = 5;
 const EXCERPT_CURRENT = 3;
@@ -33,7 +34,7 @@ export function Home() {
       </div>
       <figure className="excerpt">
         <div className="panel pseudocode">
-          <h3>{sample.signature}</h3>
+          <p className="excerpt-sig">{sample.signature}</p>
           <ol>
             {sample.lines.slice(EXCERPT_FROM - 1, EXCERPT_TO).map((text, i) => (
               <li key={i} className={EXCERPT_FROM + i === EXCERPT_CURRENT ? 'current' : undefined}>

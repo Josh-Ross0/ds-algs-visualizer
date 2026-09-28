@@ -54,11 +54,13 @@ test('DFS page: first question, final times, no edge types on screen', async () 
   expect(screen.getByRole('heading', { name: 'Depth-First Search (DFS)' })).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Run' }));
 
-  await userEvent.click(screen.getByRole('button', { name: 'Next big step' }));
+  const bigNext = screen.getByRole('button', { name: 'Next big step' });
+  await userEvent.click(bigNext);
   const dialog = screen.getByRole('dialog', { name: 'Predict the next step' });
   expect(dialog).toHaveTextContent('Which vertex will DFS discover next?');
   await userEvent.click(within(dialog).getByRole('button', { name: 'v1' }));
   expect(screen.getByRole('status')).toHaveTextContent('Correct.');
+  expect(bigNext).toHaveFocus();
 
   await userEvent.click(screen.getByLabelText('Predict mode'));
   await userEvent.click(screen.getByRole('button', { name: 'End' }));

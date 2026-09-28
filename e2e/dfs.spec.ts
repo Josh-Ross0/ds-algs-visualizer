@@ -20,17 +20,24 @@ test('edge-type question can be answered with the keyboard', async ({ page }) =>
   await page.goto('/#/dfs');
   await page.getByRole('button', { name: 'Run' }).click();
   const dialog = page.getByRole('dialog', { name: 'Predict the next step' });
-  const next = () => page.getByRole('button', { name: 'Next big step' }).click();
-  const skip = () => dialog.getByRole('button', { name: 'Skip' }).click();
-  // "Next big step" stops at every question and at every discovery/retraction.
-  await next(); await skip(); // which vertex is discovered next? (v1, DFS line 5)
-  await next();               // v1 discovered (DFS_Visit line 2)
-  await next(); await skip(); // which vertex is discovered next? (v2, DFS_Visit line 4)
-  await next();               // edge (v1, v2) explored for the first time: edge-type question
+  const nextBigStep = page.getByRole('button', { name: 'Next big step' });
+  // "Next big step" stops at every question and at every discovery/retraction;
+  // click through (skipping any dialog that isn't the edge-type question)
+  // until we reach the first edge-type question, bounded so a regression fails
+  // loudly instead of hanging.
+  for (let i = 0; i < 40; i++) {
+    await nextBigStep.click();
+    if (await dialog.count()) {
+      if ((await dialog.textContent())?.includes('What type is it?')) break;
+      await dialog.getByRole('button', { name: 'Skip' }).click();
+    }
+  }
   await expect(dialog).toContainText('What type is it?');
   await expect(page.getByRole('button', { name: 'tree' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status')).toContainText('Correct.');
+  // Focus returns to the player control used to advance, not to <body>.
+  await expect(nextBigStep).toBeFocused();
 });
 
 test('DFS page: no horizontal scroll at phone width, before and after Run', async ({ page }) => {

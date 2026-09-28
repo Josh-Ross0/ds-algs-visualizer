@@ -11,7 +11,7 @@ function getOrientationLabel(d: DSView): string {
     case 'stack':
       return '(bottom → top)';
     default:
-      return assertNever(d as never);
+      return assertNever(d);
   }
 }
 

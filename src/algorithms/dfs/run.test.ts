@@ -1,4 +1,4 @@
-import { edgeKey, moveInAdjacency, setDirected, type Graph } from '../../engine/graph';
+import { addEdge, adjacency, edgeKey, moveInAdjacency, setDirected, vertexIds, type Graph } from '../../engine/graph';
 import type { Step } from '../../engine/trace';
 import { assertQuestionsPredictable, assertValidTrace } from '../testing';
 import { dfs } from './index';
@@ -39,11 +39,13 @@ test('lecture example: every edge classified in real time', () => {
   });
 });
 
+const ALLOWED_STEP_KEYS = ['proc', 'line', 'bigStep', 'vertexState', 'vars', 'ds', 'highlight', 'note', 'question'];
+
 test('edge types are never shown outside questions', () => {
   for (const g of [lecture.graph, undirected.graph]) {
     for (const s of runDfs(g)) {
-      expect(s).not.toHaveProperty('edgeLabels');
-      expect(s.note ?? '').not.toMatch(/\b(tree|back|forward|crossing) edge\b/);
+      expect(Object.keys(s).every((k) => ALLOWED_STEP_KEYS.includes(k))).toBe(true);
+      expect(s.note ?? '').not.toMatch(/\b(tree|back|forward|crossing)\b/);
     }
   }
 });
@@ -121,25 +123,96 @@ test('question counts: one discovery and one finish per vertex, one type per edg
   expect(uq.every((q) => q.answer.kind === 'choice' && q.answer.options.join() === 'tree,back')).toBe(true);
 });
 
+// Shared by the fixed-graph and random-graph predictability checks below.
+function checkPredictable(prev: Step, step: Step): void {
+  const q = step.question!;
+  if (q.type === 'dfs.discover') {
+    const v = q.answer.value as string;
+    expect(prev.vertexState[v].color).toBe('white');
+    expect(prev.vars.u).not.toBe(v);
+    expect(prev.vars.v).not.toBe(v);
+  } else if (q.type === 'dfs.edgeType') {
+    expect([prev.proc, prev.line, prev.vars.u, prev.vars.v]).toEqual(['DFS_Visit', 4, step.vars.u, step.vars.v]);
+    expect(step.note ?? '').not.toMatch(/\b(tree|back|forward|crossing)\b/);
+  } else if (q.type === 'dfs.finish') {
+    expect(prev.vertexState[step.vars.u as string].f).toBeUndefined();
+    expect(q.answer.value).toBe(step.vars.time);
+  } else {
+    throw new Error(`unexpected question type ${q.type}`);
+  }
+}
+
 test('every question is predictable from the step before it', () => {
   for (const g of [lecture.graph, undirected.graph]) {
-    assertQuestionsPredictable(runDfs(g), (prev, step) => {
-      const q = step.question!;
-      if (q.type === 'dfs.discover') {
-        const v = q.answer.value as string;
-        expect(prev.vertexState[v].color).toBe('white');
-        expect(prev.vars.u).not.toBe(v);
-        expect(prev.vars.v).not.toBe(v);
-      } else if (q.type === 'dfs.edgeType') {
-        expect([prev.proc, prev.line, prev.vars.u, prev.vars.v]).toEqual(['DFS_Visit', 4, step.vars.u, step.vars.v]);
-        expect(step.note ?? '').not.toMatch(/\b(tree|back|forward|crossing)\b/);
-      } else if (q.type === 'dfs.finish') {
-        expect(prev.vertexState[step.vars.u as string].f).toBeUndefined();
-        expect(q.answer.value).toBe(step.vars.time);
-      } else {
-        throw new Error(`unexpected question type ${q.type}`);
+    assertQuestionsPredictable(runDfs(g), checkPredictable);
+  }
+});
+
+// mulberry32: tiny deterministic PRNG, no new dependency.
+function mulberry32(seed: number): () => number {
+  let a = seed;
+  return function random() {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomGraph(rand: () => number): Graph {
+  const n = 1 + Math.floor(rand() * 10); // 1..10
+  const directed = rand() < 0.5;
+  const vertices = Array.from({ length: n }, (_, i) => ({ id: String.fromCharCode(97 + i), x: i * 60, y: 100 }));
+  let g: Graph = { directed, vertices, edges: [], adjOrder: {} };
+  const ids = vertices.map((v) => v.id);
+  const maxEdges = directed ? n * (n - 1) : (n * (n - 1)) / 2;
+  const targetEdges = Math.floor(rand() * (maxEdges + 1));
+  for (let attempts = 0; attempts < maxEdges * 4 && g.edges.length < targetEdges; attempts++) {
+    const u = ids[Math.floor(rand() * n)];
+    const v = ids[Math.floor(rand() * n)];
+    if (u === v) continue;
+    g = addEdge(g, u, v);
+  }
+  // Shuffle each vertex's adjacency order with a handful of random adjacent swaps.
+  for (const u of ids) {
+    const len = adjacency(g, u).length;
+    for (let i = 0; i < len; i++) {
+      g = moveInAdjacency(g, u, Math.floor(rand() * len), rand() < 0.5 ? 1 : -1);
+    }
+  }
+  return g;
+}
+
+test('30 seeded random graphs: valid traces, predictable questions, correct d/f/pi', () => {
+  const rand = mulberry32(20260928);
+  for (let i = 0; i < 30; i++) {
+    const g = randomGraph(rand);
+    const steps = runDfs(g);
+    assertValidTrace(dfs, steps);
+    assertQuestionsPredictable(steps, checkPredictable);
+
+    const n = g.vertices.length;
+    const vs = last(steps).vertexState;
+    for (const v of vertexIds(g)) {
+      const a = vs[v];
+      expect(a.color).toBe('black');
+      expect(a.d as number).toBeGreaterThanOrEqual(1);
+      expect(a.d as number).toBeLessThan(a.f as number);
+      expect(a.f as number).toBeLessThanOrEqual(2 * n);
+      // Parenthesis property: a descendant's interval nests inside its parent's.
+      const p = a.pi;
+      if (typeof p === 'string') {
+        expect(vs[p].d as number).toBeLessThan(a.d as number);
+        expect(a.f as number).toBeLessThan(vs[p].f as number);
       }
-    });
+    }
+
+    const edgeQuestions = steps.flatMap((s) => (s.question?.type === 'dfs.edgeType' ? [s.question] : []));
+    expect(edgeQuestions.length).toBe(g.edges.length);
+    if (!g.directed) {
+      expect(edgeQuestions.every((q) => q.answer.value === 'tree' || q.answer.value === 'back')).toBe(true);
+    }
   }
 });
 

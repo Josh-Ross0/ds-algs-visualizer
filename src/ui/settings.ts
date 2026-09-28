@@ -4,6 +4,12 @@ import type { Question } from '../engine/trace';
 export type Settings = { predict: boolean; disabledTypes: string[]; speedMs: number };
 type KV = { getItem(k: string): string | null; setItem(k: string, v: string): void };
 
+export const SPEED_OPTIONS: { ms: number; label: string }[] = [
+  { ms: 1200, label: 'Slow' },
+  { ms: 600, label: 'Normal' },
+  { ms: 250, label: 'Fast' },
+];
+
 export const DEFAULT_SETTINGS: Settings = { predict: true, disabledTypes: [], speedMs: 600 };
 const KEY = 'dsalgs.settings.v1';
 
@@ -26,7 +32,7 @@ function sanitize(raw: unknown): Settings {
         ? (types as string[])
         : DEFAULT_SETTINGS.disabledTypes,
     speedMs:
-      typeof r.speedMs === 'number' && Number.isFinite(r.speedMs) && r.speedMs > 0
+      typeof r.speedMs === 'number' && SPEED_OPTIONS.some((o) => o.ms === r.speedMs)
         ? r.speedMs
         : DEFAULT_SETTINGS.speedMs,
   };

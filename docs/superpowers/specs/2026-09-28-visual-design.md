@@ -116,7 +116,7 @@ Single column, in DOM order: toolbar wraps, graph, question, controls, data stru
 1. **One highlighter.** Fluorescent yellow means "the algorithm is here" and appears nowhere else on the site, so the eye goes straight to it. The highlighted line is bold, with a marker-swipe shape that runs past the text a little.
 2. **Colors are data.** White, gray and black belong to the lecture. Nothing else in the UI uses pure grey fills or black fills, so a grey or black blob on the canvas is always a vertex state.
 3. **Paper, not cards.** Surfaces encode hierarchy: the pseudocode is a sheet of paper with a firm edge (the thing you read), the graph is squared paper, and the rest (table, adjacency, settings) sits directly on the page, separated by rules. No shadows, no gradients.
-4. **Marker ink for interaction.** Everything clickable is marker blue; tree edges are drawn in the same marker, since they are the structure the algorithm builds.
+4. **Marker ink.** Marker blue has two meanings, not one: everything clickable is marker blue, and so are tree edges — not because they're clickable, but because they're the structure the algorithm builds. The two never appear in the same place, so the ambiguity doesn't cost the reader anything in practice.
 5. **Motion answers the student.** Vertex fills ease between colors when stepping, so a change of state is noticed. Nothing moves on its own. `prefers-reduced-motion` turns this off.
 
 ## Review against the brief
