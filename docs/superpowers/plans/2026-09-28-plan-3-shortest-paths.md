@@ -525,7 +525,7 @@ After the `.stack .queue-items { … }` rule add:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npx vitest run` → all PASS. Run `npx tsc -b` → no errors.
+Run: `npx vitest run` → all PASS. Run `npx tsc --noEmit` → no errors.
 
 - [ ] **Step 5: Commit**
 
@@ -808,7 +808,7 @@ Pass `weighted={weighted}` to `GraphCanvas`, and render the field after the canv
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npx vitest run` → all PASS. Run `npx tsc -b` → clean.
+Run: `npx vitest run` → all PASS. Run `npx tsc --noEmit` → clean.
 
 - [ ] **Step 5: Commit**
 
@@ -1161,7 +1161,7 @@ export function shortestFrom(g: Graph, s: string): { d: Record<string, number>; 
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `npx vitest run src/algorithms/sssp` → PASS. `npx tsc -b` → clean.
+Run: `npx vitest run src/algorithms/sssp` → PASS. `npx tsc --noEmit` → clean.
 
 - [ ] **Step 5: Commit**
 
@@ -1506,7 +1506,7 @@ export const bellmanFord: AlgorithmDef = {
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `npx vitest run` → all PASS. `npx tsc -b` → clean.
+Run: `npx vitest run` → all PASS. `npx tsc --noEmit` → clean.
 
 - [ ] **Step 5: Commit**
 
@@ -1858,7 +1858,7 @@ export const dijkstra: AlgorithmDef = {
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `npx vitest run` → all PASS. `npx tsc -b` → clean.
+Run: `npx vitest run` → all PASS. `npx tsc --noEmit` → clean.
 
 - [ ] **Step 5: Commit**
 
@@ -2094,7 +2094,7 @@ Stop the preview server, then look at both PNGs. The glyphs ∈, ≠, ∅, π, �
 
 - [ ] **Step 5: Run everything and commit**
 
-Run: `npx vitest run && npx tsc -b && npm run build && npx playwright test` → all green.
+Run: `npx vitest run && npx tsc --noEmit && npm run build && npx playwright test` → all green.
 
 ```bash
 git add src/algorithms/registry.test.ts src/App.test.tsx src/ui/Home.tsx e2e/bellman-ford.spec.ts e2e/dijkstra.spec.ts docs/superpowers/specs/2026-09-28-algo-visualizer-design.md docs/superpowers/plans/plan-1-followups.md

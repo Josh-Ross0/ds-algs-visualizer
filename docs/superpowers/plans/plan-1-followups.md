@@ -20,11 +20,10 @@ Items found during Plan 1 reviews and deliberately deferred. Later plans must pi
 - ~~Focus restore also fires when a settings change auto-skips the open question.~~ Closed on branch `continue-after-answer`: focus returns only after Continue or Skip, with a test.
 
 - `AlgorithmDef.weighted` is currently unused: add weight entry in the editor, weight labels on the canvas, and tests for `moveVertex` and weighted `addEdge`. Closed: 85a9c68 (`moveVertex`/weighted `addEdge` tests, edge order), 026ded8 (weight labels on canvas), bc72b67 (weight editor).
-- Registry test: each preset's `graph.directed` matches `def.directed` unless it is `'toggle'`; the page should force direction for fixed-direction algorithms. Closed here: the registry test pins the presets; the page needs no forcing, since fixed-direction algorithms have no toggle.
+- Registry test: each preset's `graph.directed` matches `def.directed` unless it is `'toggle'`; the page should force direction for fixed-direction algorithms. Closed in the plan-3 test commit (registry.test.ts): the registry test pins the presets; the page needs no forcing, since fixed-direction algorithms have no toggle.
 - "Edit graph" should clear validation messages (otherwise Dijkstra's w ≥ 0 warning lingers). Closed: bc72b67.
 - Restore focus is done (final plan-2 fix wave). Add per-class arrow markers with `useId` ids so tree/active edges get matching arrowheads. Closed: 026ded8.
 - Screenshot the pseudocode glyphs (∈ ≠ ∅ π ∞) in WebKit and Firefox. WebKit: clean, no tofu (`∈`, `∞`, `π`, `…`, `−` all confirmed on the Bellman-Ford `.pseudocode` panel; `≠`, `∅`, `▷` don't appear on that panel so weren't visually checked). Firefox: not run — headless Firefox fails to launch in this sandbox (`Could not find profile folder`, reproduced with a writable persistent-profile dir; sandbox override is blocked by policy).
-- `AlgorithmDef.weighted` is still unused (the existing items stay).
 
 ## Plan 4 (Prim, Kruskal)
 
