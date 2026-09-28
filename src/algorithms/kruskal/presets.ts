@@ -3,7 +3,7 @@ import type { Preset } from '../types';
 
 export const kruskalPresets: Preset[] = [
   {
-    name: 'Lecture example (MST slide 21)',
+    name: 'Lecture example',
     params: {},
     graph: weightedGraph(MST_VERTICES, [
       ['a', 'r', 4], ['a', 'e', 8], ['a', 'c', 7], ['c', 'r', 6], ['d', 'r', 5], ['b', 'r', 7], ['b', 'd', 3], ['c', 'd', 2],
@@ -11,7 +11,7 @@ export const kruskalPresets: Preset[] = [
     ]),
   },
   {
-    name: 'Prim lecture example (MST slide 12)',
+    name: 'Prim lecture example',
     params: {},
     graph: weightedGraph(MST_VERTICES, [
       ['a', 'r', 4], ['a', 'e', 8], ['a', 'c', 7], ['c', 'r', 6], ['d', 'r', 5], ['b', 'r', 7], ['b', 'd', 3], ['c', 'd', 2],

@@ -3,7 +3,7 @@ import type { Preset } from '../types';
 
 export const bellmanFordPresets: Preset[] = [
   {
-    name: 'Lecture example (Shortest Paths slide 30)',
+    name: 'Lecture example',
     params: { s: 's' },
     graph: weightedDigraph(
       [

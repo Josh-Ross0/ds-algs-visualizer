@@ -3,7 +3,7 @@ import type { Preset } from '../types';
 
 export const dijkstraPresets: Preset[] = [
   {
-    name: 'Lecture example (Shortest Paths slide 40)',
+    name: 'Lecture example',
     params: { s: 's' },
     graph: weightedDigraph(
       [
@@ -24,7 +24,7 @@ export const dijkstraPresets: Preset[] = [
     ),
   },
   {
-    name: 'Tutorial 10, question 1 (negative weight)',
+    name: 'Negative weight example',
     params: { s: 's' },
     graph: weightedDigraph(
       [
