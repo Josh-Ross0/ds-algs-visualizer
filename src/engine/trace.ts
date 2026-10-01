@@ -45,6 +45,7 @@ export function formatValue(v: Value): string {
   if (v === undefined) return '';
   if (v === null) return 'NIL';
   if (v === Infinity) return '∞';
+  if (v === -Infinity) return '−∞';
   return String(v);
 }
 
