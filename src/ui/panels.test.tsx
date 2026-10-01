@@ -32,6 +32,17 @@ test('pseudocode highlights the current line of the current proc', () => {
   expect(screen.getByText('z').closest('li')).not.toHaveAttribute('aria-current');
 });
 
+test('pseudocode highlights the signature on a call step (line 0)', () => {
+  render(
+    <PseudocodePanel
+      procs={[{ name: 'P', signature: 'P(x)', lines: ['one'] }]}
+      current={{ proc: 'P', line: 0 }}
+    />,
+  );
+  expect(screen.getByRole('heading', { name: 'P(x)' })).toHaveAttribute('aria-current', 'step');
+  expect(screen.getByText('one').closest('li')).not.toHaveAttribute('aria-current');
+});
+
 test('state panel formats ∞ and NIL, shows vars and note', () => {
   render(<StatePanel columns={[{ key: 'd', label: 'd' }, { key: 'pi', label: 'π' }]} vertices={['a', 'b']} step={step} />);
   const rowB = screen.getByRole('row', { name: /^b/ });

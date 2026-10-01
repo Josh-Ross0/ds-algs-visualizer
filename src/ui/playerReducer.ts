@@ -1,4 +1,4 @@
-import { checkAnswer, type Answer, type Question, type Step } from '../engine/trace';
+import { checkAnswer, type Answer, type Question, type StepCore } from '../engine/trace';
 
 export type Outcome = 'correct' | 'wrong' | 'skipped';
 export type PlayerState = {
@@ -27,7 +27,7 @@ export function score(s: PlayerState): { correct: number; answered: number } {
   };
 }
 
-export function createPlayerReducer(steps: Step[], asked: (q: Question) => boolean) {
+export function createPlayerReducer(steps: StepCore[], asked: (q: Question) => boolean) {
   const last = steps.length - 1;
   const needsAsk = (s: PlayerState, i: number) => {
     const q = steps[i].question;

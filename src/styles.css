@@ -140,7 +140,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .panel h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
 
 /* ---------- Graph: squared paper / chalkboard ---------- */
-.graph-canvas {
+.graph-canvas, .tree-canvas {
   width: 100%;
   height: auto;
   display: block;
@@ -199,6 +199,22 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .vertex.active circle { stroke: var(--marker); stroke-width: 5; stroke-dasharray: none; }
 .vertex.selected circle, .vertex.edge-from circle { stroke: var(--red); stroke-width: 5; stroke-dasharray: none; }
 
+/* ---------- Trees (BST) ---------- */
+.tree-canvas { max-height: 460px; }
+.tree-edge { stroke: var(--edge); stroke-width: 2; }
+.tree-edge.active { stroke: var(--marker); stroke-width: 4; stroke-dasharray: 7 5; }
+.tnode { cursor: pointer; transition: transform 0.3s ease; }
+.tnode circle { fill: var(--v-white); stroke: var(--v-stroke); stroke-width: 2; }
+.tnode text { font-family: var(--font-text); font-size: 14px; font-weight: 700; fill: #000000; pointer-events: none; }
+.tnode.active circle { stroke: var(--marker); stroke-width: 5; }
+.tnode.detached circle { stroke-dasharray: 5 3; }
+.tnode .ptr-tag { font-family: var(--font-code); font-size: 12px; fill: var(--marker); }
+.nil-slot circle { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 4; }
+.nil-slot text { font-family: var(--font-code); font-size: 11px; fill: var(--muted); }
+.nil-edge { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 4; }
+.empty-note { font-family: var(--font-code); font-size: 14px; fill: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .tnode { transition: none; } }
+
 /* ---------- Pseudocode: the sheet, and the one highlighter ---------- */
 .pseudocode {
   overflow-x: auto;
@@ -213,7 +229,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .pseudocode li { display: flex; gap: 10px; padding: 0 6px; }
 .pseudocode li code { white-space: pre; }
 .pseudocode .ln { color: var(--muted); min-width: 2.5ch; text-align: right; flex: none; }
-.pseudocode li.current {
+.pseudocode li.current, .pseudocode h3.current {
   margin: 1px -6px;
   padding: 1px 12px;
   background: var(--highlighter);
@@ -336,6 +352,11 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .algo-title { font-size: 20px; font-weight: 700; }
 .algo-sig { color: var(--muted); font-size: 16px; }
 .algo-list a:hover .algo-title { text-decoration: underline; }
+.list-title { font-size: 16px; font-weight: 700; margin: 32px 0 0; }
+.list-title + .algo-list { margin-top: 8px; }
+.key-input { width: 6em; }
+.key-input[aria-invalid='true'] { border-color: var(--red); }
+.keep-result { margin: 4px 0 12px; }
 .excerpt { margin: 0; }
 .excerpt .excerpt-sig { margin: 0 0 8px; font-size: 16px; font-weight: 700; font-family: var(--font-code); }
 .excerpt .pseudocode ol { font-size: 16px; }
@@ -357,3 +378,20 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- Binary heap ---------- */
+.heap-canvas { display: flex; flex-direction: column; gap: 8px; }
+.tnode .idx-label, .heap-array .idx-label { font-family: var(--font-code); font-size: 10px; font-weight: 400; fill: var(--muted); }
+.heap-array { height: auto; display: block; }
+.heap-array .cell { cursor: pointer; }
+.heap-array .cell rect { fill: var(--v-white); stroke: var(--v-stroke); stroke-width: 2; }
+.heap-array .cell text.key { font-family: var(--font-text); font-size: 13px; font-weight: 700; fill: #000000; pointer-events: none; }
+.heap-array .cell.past { cursor: default; }
+.heap-array .cell.past rect { fill: none; stroke: var(--muted); stroke-dasharray: 3 3; }
+.heap-array .cell.past text.key { fill: var(--muted); }
+.heap-array .cell.active rect { stroke: var(--marker); stroke-width: 4; }
+.heap-array .ptr-tag { font-family: var(--font-code); font-size: 11px; fill: var(--marker); }
+.heap-size-marker { stroke: var(--marker); stroke-width: 3; }
+.marker-label { font-family: var(--font-code); font-size: 11px; fill: var(--muted); }
+.array-input { width: 16em; max-width: 100%; }
+.array-input[aria-invalid='true'] { border-color: var(--red); }
