@@ -3,17 +3,19 @@
 ## Conventions established in tree plan 1 (BST)
 
 - Every tree operation starts with a call step: `line: 0` of the main procedure; PseudocodePanel highlights the signature. `assertValidTreeTrace` allows line 0 only at step 0.
-- `StructureDef` and `TreeStep` are BST-shaped: `run(t: Tree, …)` and `TreeView.tree`. Plan 2 (heap) must generalise them (e.g. `StructureDef<S>` with a view union) instead of forcing a heap into `Tree`.
 - `TreeNode` has no `middle` yet; plan 3 (2-3 tree) adds it and a 2-3 layout (all leaves on one level, internal nodes centred over children).
 - Node answers use `{ kind: 'node', value: id | null, label, nil }`; Player builds them from clicks via its `nodes(step)` prop.
-- Operations never mutate the page's tree; "Done: keep result" adopts the last step's `view.tree`.
-- Spec gap: §3 "Pointer tags" lists `T.root` alongside x, y, z, etc. as a pointer variable to draw beside its node, but only x/y/z/etc. are currently drawn — `T.root` is not. Matters most for Tree_Insert lines 1, 2 and 4. Plan 1 doesn't need to fix this now, but the convention should carry into plans 2 and 3: heap and 2-3 tree also have `T.root` and other pointer variables.
+- Operations never mutate the page's structure; "Done: keep result" adopts the last step's view.
 
-## Plan 2 (binary heap)
+## Conventions established in tree plan 2 (binary heap)
 
-- Array strip under the tree, heap-size marker, index labels, greyed cells past heap-size.
-- Build Heap takes an editable array, not the current structure.
+- `StructureDef<S, V>` is generic over the state and the view; `view(s, selectedKey)`, `keep(view)` and optional `nodeKey` replace direct `Tree` access. `StructureView = TreeView | HeapView`, discriminated on `kind`; plan 3 adds a third view and a `StructureCanvas` branch. `validate` and `run` take `args: number[]` (`[]`, `[key]`, `[index, key]` or an array's keys, per `Operation.input`).
+- Pointer variables are drawn as tags: `TreeView.tags` maps a name to a node id (plan 1), `HeapView.tags` maps a name to an array index (drawn beside the node and under the cell). `T.root` is a tag while `tr.showRoot` is set (Tree_Insert); the heap pseudocode has no `T.root`. Plan 3's `2_3_Insert` and friends use `T.root`: set `showRoot` there too.
+- Copies (`A[1] = A[heap-size]`, `A[s] = x`) get a fresh cell id; swaps move ids with keys. Live ids stay unique, so canvases can key nodes by id and transitions animate swaps.
+- Leaf Heapify calls ask nothing (forced answer). Apply the same rule to any plan-3 question whose answer is forced.
+- `A.length` is 15 for presets and Clear, and `n` after Build Heap; Insert is blocked when the array is full.
 
 ## Plan 3 (2-3 tree)
 
 - Sentinel leaves (−∞, +∞) must never be offered as node answers or accepted as keys.
+- `nodeOptions(view)` (in `structures/views.ts`) must learn the 2-3 view; leaves only for leaf answers.

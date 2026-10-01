@@ -42,6 +42,7 @@ Routes: `#/bst`, `#/heap`, `#/two-three`. The home page gains a "Tree structures
 | 2-3 tree | Search, Minimum, Successor, Insert, Delete | key (Search, Insert); leaf, by key or click (Successor, Delete) |
 
 - **Build Heap** runs on an editable array (typed as `9, 4, 7, 1, …`), because it builds from an arbitrary array rather than the current heap.
+- Presets and Clear give `A.length = 15`; Build Heap on a typed array of n keys gives `A.length = n`, so a later Insert is blocked ("the array is full") until an Extract Min frees a cell.
 - **No free-form drawing.** Structures change only through operations, Clear and presets, so every structure is always valid.
 
 ### Run state
@@ -81,7 +82,7 @@ type StepCore = { proc: string; line: number; bigStep: boolean; vars: Record<str
 - `TreeNode = { id; key: number; left; right; middle?; p }`. Pointers are `NodeId | null`.
 - Nodes have **stable ids**, so a node keeps its identity across steps.
 - 2-3 sentinels are ordinary leaves with keys `−∞` and `+∞`.
-- **Heap:** `HeapArray = { A: number[]; heapSize: number }` (1-based in the display). The tree view is derived from indices: `Left(i) = 2i`, `Right(i) = 2i + 1`, `Parent(i) = ⌊i/2⌋`.
+- **Heap:** `HeapArray = { A: (number | null)[]; ids: number[]; heapSize: number; nextId: number }` (1-based in the display; `ids` give each cell a stable identity so swaps animate). The tree view is derived from indices: `Left(i) = 2i`, `Right(i) = 2i + 1`, `Parent(i) = ⌊i/2⌋`.
 
 ### Snapshot (`StructureView`)
 
@@ -121,7 +122,7 @@ Graph-track rules apply:
 
 ### Binary heap (min-heap, as in the lecture)
 
-- **Heapify (slide 46)**: once per call, "which of A[i], A[Left(i)], A[Right(i)] is smallest?" (node or array-cell answer).
+- **Heapify (slide 46)**: once per call that has a left child inside the heap (`Left(i) ≤ heap-size`): "which of A[i], A[Left(i)], A[Right(i)] is smallest?" (node answer by clicking a node or array cell; only cells up to heap-size are candidates). A leaf call has a forced answer and asks nothing.
 - **Build Heap (slide 47)**: each `i` is a big step; questions come from Heapify.
 - **Heap Extract Min (slide 49)**: no question of its own; its `Heapify(A, 1)` asks.
 - **Heap Decrease Key (slide 50)**: at each test of line 4, "does A[i] swap with its parent?" (yes/no).
