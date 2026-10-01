@@ -17,7 +17,7 @@ export function HeapArrayStrip({ view, onCellClick }: Props) {
   const anchor = heap.heapSize === 0 ? 'start' : heap.heapSize === n ? 'end' : 'middle';
 
   return (
-    <svg className="heap-array" viewBox={`0 0 ${2 * PAD + n * CELL} 84`} role="img" aria-label="Array A">
+    <svg className="heap-array" viewBox={`0 0 ${2 * PAD + n * CELL} 84`} role="img" aria-label="Heap array cells">
       {heap.A.map((key, j) => {
         const i = j + 1;
         const live = i <= heap.heapSize;

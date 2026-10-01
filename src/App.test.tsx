@@ -216,3 +216,16 @@ test('#/bst opens the BST page with the lecture tree', () => {
   expect(screen.getByRole('heading', { name: 'Binary Search Tree (BST)' })).toBeInTheDocument();
   expect(container.querySelectorAll('.tnode')).toHaveLength(12);
 });
+
+test('home lists the heap under tree structures', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /Binary Heap/ })).toHaveAttribute('href', '#/heap');
+});
+
+test('#/heap opens the heap page with the example heap', () => {
+  window.location.hash = '#/heap';
+  const { container } = render(<App />);
+  expect(screen.getByRole('heading', { name: 'Binary Heap (min-heap)' })).toBeInTheDocument();
+  expect(container.querySelectorAll('.tnode')).toHaveLength(10);
+  expect(container.querySelector('.marker-label')).toHaveTextContent('heap-size = 10');
+});
