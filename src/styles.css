@@ -395,3 +395,11 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 .marker-label { font-family: var(--font-code); font-size: 11px; fill: var(--muted); }
 .array-input { width: 16em; max-width: 100%; }
 .array-input[aria-invalid='true'] { border-color: var(--red); }
+
+/* ---------- 2-3 tree ---------- */
+.tnode.leaf rect { fill: var(--v-white); stroke: var(--v-stroke); stroke-width: 2; }
+.tnode.leaf.sentinel rect { fill: none; stroke: var(--muted); stroke-dasharray: 4 3; }
+.tnode.leaf.sentinel text.key { fill: var(--muted); }
+.tnode.active rect { stroke: var(--marker); stroke-width: 5; }
+.tnode.detached rect { stroke-dasharray: 5 3; }
+.two-three .tnode:not(.leaf), .two-three .tnode.sentinel { cursor: default; }
