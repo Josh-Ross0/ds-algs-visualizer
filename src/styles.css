@@ -382,7 +382,7 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 /* ---------- Binary heap ---------- */
 .heap-canvas { display: flex; flex-direction: column; gap: 8px; }
 .tnode .idx-label, .heap-array .idx-label { font-family: var(--font-code); font-size: 10px; font-weight: 400; fill: var(--muted); }
-.heap-array { width: 100%; height: auto; display: block; }
+.heap-array { height: auto; display: block; }
 .heap-array .cell { cursor: pointer; }
 .heap-array .cell rect { fill: var(--v-white); stroke: var(--v-stroke); stroke-width: 2; }
 .heap-array .cell text.key { font-family: var(--font-text); font-size: 13px; font-weight: 700; fill: #000000; pointer-events: none; }

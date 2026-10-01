@@ -4,6 +4,8 @@ import type { HeapView } from '../structures/types';
 
 const CELL = 28;
 const PAD = 16;
+// Wide enough for the heap-size label even when the array is one cell long.
+const MIN_WIDTH = 130;
 
 type Props = { view: HeapView; onCellClick?(id: string): void };
 
@@ -13,11 +15,18 @@ export function HeapArrayStrip({ view, onCellClick }: Props) {
   const n = heap.A.length;
   const tagsAt: Record<number, string[]> = {};
   for (const [name, at] of Object.entries(tags)) (tagsAt[at] ??= []).push(name);
+  const width = Math.max(2 * PAD + n * CELL, MIN_WIDTH);
   const markerX = PAD + heap.heapSize * CELL;
   const anchor = heap.heapSize === 0 ? 'start' : heap.heapSize === n ? 'end' : 'middle';
 
   return (
-    <svg className="heap-array" viewBox={`0 0 ${2 * PAD + n * CELL} 84`} role="img" aria-label="Heap array cells">
+    <svg
+      className="heap-array"
+      viewBox={`0 0 ${width} 84`}
+      style={{ width: `${width}px`, maxWidth: '100%' }}
+      role="img"
+      aria-label="Heap array cells"
+    >
       {heap.A.map((key, j) => {
         const i = j + 1;
         const live = i <= heap.heapSize;

@@ -66,3 +66,12 @@ test('StructureCanvas picks the drawing by view kind', () => {
   rerender(<StructureCanvas view={view()} />);
   expect(container.querySelector('.heap-array')).not.toBeNull();
 });
+
+test('a short array strip keeps its natural size (capped by the page width) and fits the heap-size label', () => {
+  const { container } = render(<HeapCanvas view={view({ heap: makeHeap([7], 1, 1) })} />);
+  const strip = container.querySelector('.heap-array') as SVGSVGElement;
+  const width = Number(strip.getAttribute('viewBox')!.split(' ')[2]);
+  expect(width).toBeGreaterThanOrEqual(130);
+  expect(strip.style.width).toBe(`${width}px`);
+  expect(strip.style.maxWidth).toBe('100%');
+});
