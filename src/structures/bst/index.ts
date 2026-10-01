@@ -1,5 +1,5 @@
 import { findKey, size, type Tree } from '../../engine/tree';
-import type { StructureDef } from '../types';
+import type { StructureDef, TreeView } from '../types';
 import { buildBst } from './model';
 import { BST_DELETE, bstProcs, TREE_INSERT, TREE_MINIMUM, TREE_SEARCH, TREE_SUCCESSOR } from './pseudocode';
 import { runMinimum, runSearch, runSuccessor } from './queries';
@@ -8,7 +8,8 @@ import { runDelete, runInsert } from './updates';
 
 const MAX_NODES = 15;
 
-function validate(t: Tree, op: string, k: number | null): string[] {
+function validate(t: Tree, op: string, args: number[]): string[] {
+  const k = args[0] ?? null;
   if (op === 'minimum') return size(t) === 0 ? ['Tree Minimum is undefined on an empty tree.'] : [];
   if (k === null) return ['Enter an integer key.'];
   if (op === 'insert') {
@@ -20,7 +21,7 @@ function validate(t: Tree, op: string, k: number | null): string[] {
   return [];
 }
 
-export const bst: StructureDef = {
+export const bst: StructureDef<Tree, TreeView> = {
   id: 'bst',
   title: 'Binary Search Tree (BST)',
   procs: bstProcs,
@@ -38,14 +39,21 @@ export const bst: StructureDef = {
   ],
   maxNodes: MAX_NODES,
   build: buildBst,
+  view(t, selectedKey) {
+    const selected = selectedKey === null ? null : findKey(t, selectedKey);
+    return { kind: 'tree', tree: t, highlight: { nodes: selected ? [selected] : [], edges: [] }, tags: {} };
+  },
+  keep: (v) => v.tree,
+  nodeKey: (t, id) => t.nodes[id].key,
   validate,
-  run(t, op, k) {
+  run(t, op, args) {
+    const k = args[0];
     switch (op) {
-      case 'search': return runSearch(t, k!);
+      case 'search': return runSearch(t, k);
       case 'minimum': return runMinimum(t);
-      case 'successor': return runSuccessor(t, k!);
-      case 'insert': return runInsert(t, k!);
-      case 'delete': return runDelete(t, k!);
+      case 'successor': return runSuccessor(t, k);
+      case 'insert': return runInsert(t, k);
+      case 'delete': return runDelete(t, k);
       default: throw new Error(`Unknown BST operation ${op}`);
     }
   },

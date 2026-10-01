@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { findKey, inorder, type NodeId } from '../engine/tree';
-import type { StructureDef, TreeStep } from '../structures/types';
+import { inorder, type Tree } from '../engine/tree';
+import type { StructureDef, TreeStep, TreeView } from '../structures/types';
 import { DSPanel } from './DSPanel';
 import { Player } from './Player';
 import { PseudocodePanel } from './PseudocodePanel';
@@ -10,7 +10,7 @@ import { TreeCanvas } from './TreeCanvas';
 
 const parseKey = (text: string): number | null => (/^-?\d+$/.test(text.trim()) ? Number(text.trim()) : null);
 
-export function StructurePage({ def }: { def: StructureDef }) {
+export function StructurePage({ def }: { def: StructureDef<Tree, TreeView> }) {
   const [presetIndex, setPresetIndex] = useState(0);
   const [tree, setTree] = useState(() => def.build(def.presets[0].keys));
   const [opId, setOpId] = useState(def.operations[0].id);
@@ -34,7 +34,6 @@ export function StructurePage({ def }: { def: StructureDef }) {
   const procs = op.procs.map((name) => def.procs.find((p) => p.name === name)!);
   const needsKey = op.input !== 'none';
   const key = parseKey(keyText);
-  const selected: NodeId | null = op.input === 'node' && key !== null ? findKey(tree, key) : null;
 
   const loadPreset = (i: number) => {
     setPresetIndex(i);
@@ -42,15 +41,15 @@ export function StructurePage({ def }: { def: StructureDef }) {
     setErrors([]);
   };
   const run = () => {
-    const k = needsKey ? key : null;
-    const e = def.validate(tree, op.id, k);
+    const args = needsKey ? [key!] : [];
+    const e = def.validate(tree, op.id, args);
     setErrors(e);
     if (e.length > 0) return;
-    setSteps(def.run(tree, op.id, k));
+    setSteps(def.run(tree, op.id, args));
     setRunId((r) => r + 1);
   };
   const keep = () => {
-    setTree(steps![steps!.length - 1].view.tree);
+    setTree(def.keep(steps![steps!.length - 1].view));
     setSteps(null);
     focusRunRef.current = true;
   };
@@ -104,8 +103,8 @@ export function StructurePage({ def }: { def: StructureDef }) {
         <div className="layout">
           <div className="main-col">
             <TreeCanvas
-              view={{ tree, highlight: { nodes: selected ? [selected] : [], edges: [] }, tags: {} }}
-              onNodeClick={op.input === 'node' ? (id) => setKeyText(String(tree.nodes[id].key)) : undefined}
+              view={def.view(tree, op.input === 'node' ? key : null)}
+              onNodeClick={op.input === 'node' ? (id) => setKeyText(String(def.nodeKey!(tree, id))) : undefined}
             />
             {op.input === 'node' && <p className="muted hint">Click a node or type its key.</p>}
           </div>

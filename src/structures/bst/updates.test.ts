@@ -79,27 +79,27 @@ test('delete case 4 where the successor is x.right itself (9 → 11)', () => {
 test('deleting the only node empties the tree; Minimum is then blocked, Insert still works', () => {
   const t = result(runDelete(buildBst([7]), 7));
   expect(t.root).toBeNull();
-  expect(bst.validate(t, 'minimum', null)).toEqual(['Tree Minimum is undefined on an empty tree.']);
-  expect(bst.validate(t, 'insert', 3)).toEqual([]);
+  expect(bst.validate(t, 'minimum', [])).toEqual(['Tree Minimum is undefined on an empty tree.']);
+  expect(bst.validate(t, 'insert', [3])).toEqual([]);
 });
 
 test('validate: unique keys, existing nodes, node limit, missing key', () => {
   const t = buildBst(LECTURE);
-  expect(bst.validate(t, 'insert', 12)).toEqual(['Key 12 is already in the tree (keys must be unique).']);
-  expect(bst.validate(t, 'delete', 13)).toEqual(['No node with key 13.']);
-  expect(bst.validate(t, 'successor', 13)).toEqual(['No node with key 13.']);
-  expect(bst.validate(t, 'search', 13)).toEqual([]);
-  expect(bst.validate(t, 'search', null)).toEqual(['Enter an integer key.']);
+  expect(bst.validate(t, 'insert', [12])).toEqual(['Key 12 is already in the tree (keys must be unique).']);
+  expect(bst.validate(t, 'delete', [13])).toEqual(['No node with key 13.']);
+  expect(bst.validate(t, 'successor', [13])).toEqual(['No node with key 13.']);
+  expect(bst.validate(t, 'search', [13])).toEqual([]);
+  expect(bst.validate(t, 'search', [])).toEqual(['Enter an integer key.']);
   const full = buildBst([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
-  expect(bst.validate(full, 'insert', 16)).toEqual(['The tree is limited to 15 nodes so it stays readable.']);
+  expect(bst.validate(full, 'insert', [16])).toEqual(['The tree is limited to 15 nodes so it stays readable.']);
 });
 
 test('run dispatches every operation', () => {
   const t = buildBst(LECTURE);
   for (const op of bst.operations) {
-    const k = op.input === 'none' ? null : op.id === 'insert' ? 5 : 12;
-    expect(bst.validate(t, op.id, k)).toEqual([]);
-    assertValidTreeTrace(bst, bst.run(t, op.id, k));
+    const args = op.input === 'none' ? [] : [op.id === 'insert' ? 5 : 12];
+    expect(bst.validate(t, op.id, args)).toEqual([]);
+    assertValidTreeTrace(bst, bst.run(t, op.id, args));
   }
 });
 
@@ -132,8 +132,8 @@ test('questions are predictable; random insert/delete sequences keep a valid BST
   for (let n = 0; n < 200; n++) {
     const k = 1 + Math.floor(rand() * 20);
     const op = model.has(k) ? 'delete' : 'insert';
-    if (bst.validate(t, op, k).length > 0) continue;
-    const steps = bst.run(t, op, k);
+    if (bst.validate(t, op, [k]).length > 0) continue;
+    const steps = bst.run(t, op, [k]);
     assertValidTreeTrace(bst, steps);
     checkPredictable(steps);
     t = result(steps);

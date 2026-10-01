@@ -5,6 +5,7 @@ import type { TreeView } from '../structures/types';
 import { TreeCanvas } from './TreeCanvas';
 
 const view = (over: Partial<TreeView> = {}): TreeView => ({
+  kind: 'tree',
   tree: buildBst([10, 5, 15]),
   highlight: { nodes: [], edges: [] },
   tags: {},

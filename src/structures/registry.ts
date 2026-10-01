@@ -1,4 +1,4 @@
 import { bst } from './bst';
-import type { StructureDef } from './types';
+import type { AnyStructure } from './types';
 
-export const STRUCTURES: StructureDef[] = [bst];
+export const STRUCTURES: AnyStructure[] = [bst];

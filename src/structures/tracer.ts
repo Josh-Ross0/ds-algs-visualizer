@@ -43,7 +43,7 @@ export function createTreeTracer(tree: Tree): TreeTracer {
         vars,
         note: o.note,
         question: o.question,
-        view: { tree: tr.tree, highlight: { nodes: o.nodes ?? [], edges: o.edges ?? [] }, tags, nil: o.nil },
+        view: { kind: 'tree' as const, tree: tr.tree, highlight: { nodes: o.nodes ?? [], edges: o.edges ?? [] }, tags, nil: o.nil },
         ds: tr.stack.length > 0 ? [{ kind: 'stack' as const, name: 'Call stack', items: tr.stack }] : [],
       }));
     },
