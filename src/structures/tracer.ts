@@ -19,6 +19,8 @@ export type TreeTracer = {
   // Other variables (e.g. k).
   extra: Record<string, Value>;
   stack: string[];
+  // While true, T.root is a pointer variable of the running procedure (Tree_Insert).
+  showRoot: boolean;
   emit(proc: string, line: number, o?: TreeEmit): void;
 };
 
@@ -29,12 +31,17 @@ export function createTreeTracer(tree: Tree): TreeTracer {
     ptr: {},
     extra: {},
     stack: [],
+    showRoot: false,
     emit(proc, line, o = {}) {
       const vars: Record<string, Value> = { ...tr.extra };
       const tags: Record<string, NodeId> = {};
       for (const [name, id] of Object.entries(tr.ptr)) {
         vars[name] = id === null ? null : tr.tree.nodes[id].key;
         if (id !== null) tags[name] = id;
+      }
+      if (tr.showRoot) {
+        vars['T.root'] = tr.tree.root === null ? null : tr.tree.nodes[tr.tree.root].key;
+        if (tr.tree.root !== null) tags['T.root'] = tr.tree.root;
       }
       tr.steps.push(structuredClone({
         proc,

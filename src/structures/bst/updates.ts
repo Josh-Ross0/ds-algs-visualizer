@@ -18,6 +18,7 @@ function insertQuestion(zKey: number, yKey: number): Question {
 export function runInsert(t0: Tree, k: number): TreeStep[] {
   const tr = createTreeTracer(structuredClone(t0));
   const T = tr.tree;
+  tr.showRoot = true;
   const z = newNode(T, k);
   tr.ptr = { z };
   tr.emit(TREE_INSERT, 0, { nodes: [z], note: `Tree_Insert(T, z) with z.key = ${k}` });

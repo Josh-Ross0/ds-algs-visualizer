@@ -5,6 +5,7 @@ import { assertValidTreeTrace } from '../testing';
 import type { TreeStep } from '../types';
 import { bst } from './index';
 import { buildBst } from './model';
+import { runSearch } from './queries';
 import { runDelete, runInsert } from './updates';
 
 const LECTURE = [17, 4, 20, 1, 12, 18, 29, 9, 26, 6, 11, 23];
@@ -142,4 +143,16 @@ test('questions are predictable; random insert/delete sequences keep a valid BST
     expect(isBst(t)).toBe(true);
     expect(keys(t)).toEqual([...model].sort((a, b) => a - b));
   }
+});
+
+test('Tree_Insert tags T.root on the root node and lists it in the variables; other procedures do not', () => {
+  const t = buildBst(LECTURE);
+  const steps = runInsert(t, 10);
+  expect(steps.every((s) => s.vars['T.root'] === 17 && s.view.tags['T.root'] === t.root)).toBe(true);
+
+  const empty = runInsert(buildBst([]), 5);
+  expect([empty[1].vars['T.root'], 'T.root' in empty[1].view.tags]).toEqual([null, false]);
+  expect([last(empty).vars['T.root'], last(empty).view.tags['T.root']]).toEqual([5, last(empty).view.tree.root]);
+
+  expect('T.root' in runSearch(t, 12)[1].vars).toBe(false);
 });
