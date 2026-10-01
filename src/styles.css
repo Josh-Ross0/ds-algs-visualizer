@@ -378,3 +378,20 @@ input[type='range'] { accent-color: var(--marker); padding: 0; border: none; bac
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- Binary heap ---------- */
+.heap-canvas { display: flex; flex-direction: column; gap: 8px; }
+.tnode .idx-label, .heap-array .idx-label { font-family: var(--font-code); font-size: 10px; font-weight: 400; fill: var(--muted); }
+.heap-array { width: 100%; height: auto; display: block; }
+.heap-array .cell { cursor: pointer; }
+.heap-array .cell rect { fill: var(--v-white); stroke: var(--v-stroke); stroke-width: 2; }
+.heap-array .cell text.key { font-family: var(--font-text); font-size: 13px; font-weight: 700; fill: #000000; pointer-events: none; }
+.heap-array .cell.past { cursor: default; }
+.heap-array .cell.past rect { fill: none; stroke: var(--muted); stroke-dasharray: 3 3; }
+.heap-array .cell.past text.key { fill: var(--muted); }
+.heap-array .cell.active rect { stroke: var(--marker); stroke-width: 4; }
+.heap-array .ptr-tag { font-family: var(--font-code); font-size: 11px; fill: var(--marker); }
+.heap-size-marker { stroke: var(--marker); stroke-width: 3; }
+.marker-label { font-family: var(--font-code); font-size: 11px; fill: var(--muted); }
+.array-input { width: 16em; max-width: 100%; }
+.array-input[aria-invalid='true'] { border-color: var(--red); }
