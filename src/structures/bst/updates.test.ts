@@ -156,3 +156,14 @@ test('Tree_Insert tags T.root on the root node and lists it in the variables; ot
 
   expect('T.root' in runSearch(t, 12)[1].vars).toBe(false);
 });
+
+test('validate: Insert keys are limited to four characters so they fit inside a node', () => {
+  const t = buildBst(LECTURE);
+  const msg = ['Keys are limited to -999…9999 so they fit inside a node.'];
+  expect(bst.validate(t, 'insert', [10000])).toEqual(msg);
+  expect(bst.validate(t, 'insert', [-1000])).toEqual(msg);
+  expect(bst.validate(t, 'insert', [9999])).toEqual([]);
+  expect(bst.validate(t, 'insert', [-999])).toEqual([]);
+  expect(bst.validate(t, 'insert', [0])).toEqual([]);
+  expect(bst.validate(t, 'search', [123456])).toEqual([]); // nothing is drawn for a search key
+});
