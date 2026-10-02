@@ -8,7 +8,11 @@ import { useSettings } from './settings';
 import { StatePanel } from './StatePanel';
 import { StructureCanvas } from './StructureCanvas';
 
-const parseKey = (text: string): number | null => (/^-?\d+$/.test(text.trim()) ? Number(text.trim()) : null);
+const parseKey = (text: string): number | null => {
+  if (!/^-?\d+$/.test(text.trim())) return null;
+  const n = Number(text.trim());
+  return Number.isSafeInteger(n) ? n : null;
+};
 // "9, 4 7" → [9, 4, 7]; null when empty or when any item is not an integer.
 const parseList = (text: string): number[] | null => {
   const nums = text.split(/[,\s]+/).filter((p) => p !== '').map(parseKey);

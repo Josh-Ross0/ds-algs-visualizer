@@ -119,9 +119,13 @@ export function twoThreeLayout(t: Tree): { pos: Record<NodeId, Pos>; width: numb
       // an old root whose only child is now the root: park it at the top, its edge shows the stale pointer
       pos[r] = { x: TREE_PAD + slot++ * TREE_SPACING, y: TREE_PAD };
     } else {
-      place(r, 0);
+      // a new root over the old root and a loose subtree: one level above the placed kid, so leaves share a row
+      const placed = ks.filter((c) => c in pos).map((c) => (pos[c].y - TREE_PAD) / TREE_LEVEL);
+      place(r, placed.length > 0 ? Math.min(...placed) - 1 : 0);
     }
   }
+  const minY = Math.min(TREE_PAD, ...Object.values(pos).map((p) => p.y));
+  for (const p of Object.values(pos)) p.y += TREE_PAD - minY; // the whole picture drops when the new root appears
   const all = Object.values(pos);
   return {
     pos,

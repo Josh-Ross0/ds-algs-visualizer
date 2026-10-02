@@ -128,3 +128,20 @@ test('Run is disabled for non-integer key text; negative integers and 0 are fine
   await userEvent.selectOptions(screen.getByLabelText('Operation'), 'minimum');
   expect(run).toBeEnabled();
 });
+
+test('keys outside the safe integer range leave Run disabled; ordinary keys enable it', async () => {
+  render(<StructurePage def={twoThree} />);
+  await userEvent.selectOptions(screen.getByLabelText('Operation'), 'insert');
+  const key = screen.getByLabelText('Key');
+  const run = screen.getByRole('button', { name: 'Run' });
+  for (const bad of ['9'.repeat(400), '9007199254740993']) {
+    await userEvent.clear(key);
+    await userEvent.type(key, bad);
+    expect(run).toBeDisabled();
+  }
+  for (const good of ['42', '-3']) {
+    await userEvent.clear(key);
+    await userEvent.type(key, good);
+    expect(run).toBeEnabled();
+  }
+});
