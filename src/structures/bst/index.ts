@@ -7,12 +7,15 @@ import { BST_QUESTION_TYPES } from './questions';
 import { runDelete, runInsert } from './updates';
 
 const MAX_NODES = 15;
+const MIN_KEY = -999; // four characters at most, so a key fits inside its node
+const MAX_KEY = 9999;
 
 function validate(t: Tree, op: string, args: number[]): string[] {
   const k = args[0] ?? null;
   if (op === 'minimum') return size(t) === 0 ? ['Tree Minimum is undefined on an empty tree.'] : [];
   if (k === null) return ['Enter an integer key.'];
   if (op === 'insert') {
+    if (k < MIN_KEY || k > MAX_KEY) return [`Keys are limited to ${MIN_KEY}…${MAX_KEY} so they fit inside a node.`];
     if (findKey(t, k) !== null) return [`Key ${k} is already in the tree (keys must be unique).`];
     if (size(t) >= MAX_NODES) return [`The tree is limited to ${MAX_NODES} nodes so it stays readable.`];
     return [];
