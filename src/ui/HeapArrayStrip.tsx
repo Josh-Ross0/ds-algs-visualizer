@@ -32,6 +32,7 @@ export function HeapArrayStrip({ view, onCellClick }: Props) {
         const live = i <= heap.heapSize;
         const cls = ['cell'];
         if (!live) cls.push('past');
+        if (live && onCellClick) cls.push('clickable');
         if (highlight.cells.includes(i)) cls.push('active');
         return (
           <g
