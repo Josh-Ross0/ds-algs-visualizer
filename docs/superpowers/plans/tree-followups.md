@@ -15,7 +15,11 @@
 - Leaf Heapify calls ask nothing (forced answer). Apply the same rule to any plan-3 question whose answer is forced.
 - `A.length` is 15 for presets and Clear, and `n` after Build Heap; Insert is blocked when the array is full.
 
-## Plan 3 (2-3 tree)
+## Conventions established in tree plan 3 (2-3 tree)
 
-- Sentinel leaves (−∞, +∞) must never be offered as node answers or accepted as keys.
-- `nodeOptions(view)` (in `structures/views.ts`) must learn the 2-3 view; leaves only for leaf answers.
+- `TreeNode` carries `middle?` and `leaf?`; a node with NIL attributes has `key = NaN` (the tracer shows it as NIL). `StructureView` has a third member, `TwoThreeView`; add a view the same way for any further structure: a `kind`, a `StructureCanvas` branch, a `nodeOptions` branch.
+- `createTreeTracer`/`createTwoThreeTracer` share one factory. A pointer variable whose node was deleted shows `'deleted'` and has no tag; procedures drop the variable (`dropVar`) when the lecture frees a node.
+- Procedures that call procedures run in their own frame: `inFrame(tr, frameLabel, ptr, body)` swaps variables and the call stack and restores them.
+- A line that calls a procedure emits one step before the callee's steps; the caller's variable that receives the result changes in the caller's next step.
+- Sentinels (`±∞` leaves) are ordinary leaves; they are excluded from node answers (`realLeaves`), from clicks (`TwoThreeCanvas`) and from keys (integers only).
+- Out of scope, as in the spec: the augmented 2-3 tree of Tutorial 6 and B+ trees with d > 3.

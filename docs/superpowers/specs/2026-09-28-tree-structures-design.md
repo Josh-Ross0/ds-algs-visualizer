@@ -39,7 +39,9 @@ Routes: `#/bst`, `#/heap`, `#/two-three`. The home page gains a "Tree structures
 |---|---|---|
 | BST | Search, Minimum, Successor, Insert, Delete | key (Search, Insert); node, by typing its key or clicking it (Successor, Delete) |
 | Binary heap | Build Heap, Extract Min, Decrease Key, Insert | array (Build Heap); index i and new key k (Decrease Key); key (Insert) |
-| 2-3 tree | Search, Minimum, Successor, Insert, Delete | key (Search, Insert); leaf, by key or click (Successor, Delete) |
+| 2-3 tree | Search, Minimum, Successor, Insert, Delete, Init | key (Search, Insert); leaf, by key or click (Successor, Delete); none (Minimum, Init) |
+
+- **Init** runs `2_3_Init` (slide 21) and, on "Done: keep result", leaves the sentinel-only tree; it ignores the tree on screen.
 
 - **Build Heap** runs on an editable array (typed as `9, 4, 7, 1, …`), because it builds from an arbitrary array rather than the current heap.
 - Presets and Clear give `A.length = 15`; Build Heap on a typed array of n keys gives `A.length = n`, so a later Insert is blocked ("the array is full") until an Extract Min frees a cell.
@@ -80,6 +82,7 @@ type StepCore = { proc: string; line: number; bigStep: boolean; vars: Record<str
 
 - `Tree = { root: NodeId | null; nodes: Record<NodeId, TreeNode> }`.
 - `TreeNode = { id; key: number; left; right; middle?; p }`. Pointers are `NodeId | null`.
+- 2-3 only: `middle?` and `leaf?` on `TreeNode`; a node whose DS attributes are still NIL (a new internal node) has `key = NaN`. The 2-3 snapshot is a `TwoThreeView` (`kind: 'two-three'`), drawn by `TwoThreeCanvas` from child pointers so half-finished states still draw.
 - Nodes have **stable ids**, so a node keeps its identity across steps.
 - 2-3 sentinels are ordinary leaves with keys `−∞` and `+∞`.
 - **Heap:** `HeapArray = { A: (number | null)[]; ids: number[]; heapSize: number; nextId: number }` (1-based in the display; `ids` give each cell a stable identity so swaps animate). The tree view is derived from indices: `Left(i) = 2i`, `Right(i) = 2i + 1`, `Parent(i) = ⌊i/2⌋`.
@@ -133,7 +136,7 @@ Graph-track rules apply:
 - **Search (slide 22)** and **the walk down in Insert (slide 31)**: at each internal node, "left, middle or right child?" (choice).
 - **Insert And Split (slides 29–30)**: "does x split?" (yes/no). When it doesn't split, "where does z go: before ℓ, between ℓ and m, or after m?" (choice).
 - **Delete (slides 37–38) → Borrow Or Merge (slides 34–36)**: "borrow or merge?" (choice).
-- **Minimum (slide 23)** and **Successor (slide 24)**: "which leaf?" (node answer, with NIL where the procedure can return NIL).
+- **Minimum (slide 23)** and **Successor (slide 24)**: "which leaf?" (node answer; Successor also offers NIL). Minimum on an empty tree asks nothing and runs to line 7's error. Sentinels are never offered as answers.
 - **Init (slide 21), Update Key (slide 26) and Set Children (slide 27)**: stepped through line by line, with no questions.
 
 ### Answer types

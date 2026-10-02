@@ -229,3 +229,16 @@ test('#/heap opens the heap page with the example heap', () => {
   expect(container.querySelectorAll('.tnode')).toHaveLength(10);
   expect(container.querySelector('.marker-label')).toHaveTextContent('heap-size = 10');
 });
+
+test('home lists the 2-3 tree under tree structures', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /2-3 Tree/ })).toHaveAttribute('href', '#/two-three');
+});
+
+test('#/two-three opens the 2-3 tree page with the lecture example and both sentinels', () => {
+  window.location.hash = '#/two-three';
+  const { container } = render(<App />);
+  expect(screen.getByRole('heading', { name: '2-3 Tree' })).toBeInTheDocument();
+  expect(container.querySelectorAll('.tnode.leaf')).toHaveLength(11);
+  expect(container.querySelectorAll('.tnode.sentinel')).toHaveLength(2);
+});

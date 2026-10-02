@@ -3,8 +3,7 @@ import type { DSView, StepCore } from '../engine/trace';
 import type { HeapArray } from '../engine/heapArray';
 import type { NilSlot, NodeId, Tree } from '../engine/tree';
 
-export type TreeView = {
-  kind: 'tree';
+type TreeShape = {
   tree: Tree;
   // nodes: highlighted nodes; edges: child ids whose edge to their parent is highlighted.
   highlight: { nodes: NodeId[]; edges: NodeId[] };
@@ -12,6 +11,8 @@ export type TreeView = {
   tags: Record<string, NodeId>;
   nil?: NilSlot;
 };
+export type TreeView = TreeShape & { kind: 'tree' };
+export type TwoThreeView = TreeShape & { kind: 'two-three' };
 
 export type HeapView = {
   kind: 'heap';
@@ -22,10 +23,11 @@ export type HeapView = {
   tags: Record<string, number>;
 };
 
-export type StructureView = TreeView | HeapView;
+export type StructureView = TreeView | TwoThreeView | HeapView;
 export type StructureStep<V extends StructureView = StructureView> = StepCore & { view: V; ds: DSView[] };
 export type TreeStep = StructureStep<TreeView>;
 export type HeapStep = StructureStep<HeapView>;
+export type TwoThreeStep = StructureStep<TwoThreeView>;
 
 // input: what the operation bar asks for. 'node' = a key typed or a node clicked; 'array' = a
 // comma-separated list (sample is its initial text); 'index-key' = an array index i and a key k.

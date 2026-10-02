@@ -1,6 +1,16 @@
 // Rooted binary tree with stable node ids (pointer model of the lecture: left, right, p).
 export type NodeId = string;
-export type TreeNode = { id: NodeId; key: number; left: NodeId | null; right: NodeId | null; p: NodeId | null };
+// middle and leaf are used by 2-3 trees only (BST nodes leave them unset). A 2-3 internal node that has no
+// children yet is not a leaf, so the flag cannot be derived from the pointers; key NaN means NIL.
+export type TreeNode = {
+  id: NodeId;
+  key: number;
+  left: NodeId | null;
+  right: NodeId | null;
+  p: NodeId | null;
+  middle?: NodeId | null;
+  leaf?: boolean;
+};
 export type Tree = { root: NodeId | null; nodes: Record<NodeId, TreeNode>; nextId: number };
 // Where a NIL child is drawn when a walk steps off the tree.
 export type NilSlot = { parent: NodeId; side: 'left' | 'right' };
