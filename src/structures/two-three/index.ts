@@ -41,7 +41,7 @@ export const twoThree: StructureDef<Tree, TwoThreeView> = {
   questionTypes: TWO_THREE_QUESTION_TYPES,
   presets: [
     // Inserted in this order the tree is slide 18 with the two sentinels joined to the first and last leaf groups.
-    { name: 'Lecture example (slide 18)', keys: [4, 5, 1, 14, 19, 7, 22, 25, 29] },
+    { name: 'Lecture example', keys: [4, 5, 1, 14, 19, 7, 22, 25, 29] },
     { name: 'Sorted inserts (1-7)', keys: [1, 2, 3, 4, 5, 6, 7] },
     { name: 'Full tree (12 keys)', keys: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
   ],

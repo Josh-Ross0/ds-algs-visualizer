@@ -75,3 +75,11 @@ test('a short array strip keeps its natural size (capped by the page width) and 
   expect(strip.style.width).toBe(`${width}px`);
   expect(strip.style.maxWidth).toBe('100%');
 });
+
+test('live array cells show the pointer cursor only while a click does something', () => {
+  const { container, rerender } = render(<HeapCanvas view={view()} />);
+  expect(container.querySelectorAll('.heap-array .cell.clickable')).toHaveLength(0);
+  rerender(<HeapCanvas view={view()} onNodeClick={vi.fn()} />);
+  expect(container.querySelectorAll('.heap-array .cell.clickable')).toHaveLength(10); // live cells only
+  expect(container.querySelector('[data-cell="11"]')).not.toHaveClass('clickable'); // a stale cell never
+});
